@@ -1,6 +1,8 @@
-// Models go here
+export interface Todo {
+  id: number;
+  content: string;
+}
 
-//export interface ExampleModel {
-//  id: number;
-//  name: string;
-//}
+export interface Meta {
+  totalCount: number;
+}

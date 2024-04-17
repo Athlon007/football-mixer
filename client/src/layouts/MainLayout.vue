@@ -12,7 +12,8 @@
     </q-drawer>
 
     <q-page-container>
-      <q-btn class="q-ml-md q-mt-md" flat dense round icon="menu" aria-label="Menu" @click="toggleLeftDrawer" />
+      <q-btn class="q-ml-md q-mt-md" outline size="2em" dense icon="settings" aria-label="Menu"
+        @click="toggleLeftDrawer" />
       <router-view />
     </q-page-container>
   </q-layout>
