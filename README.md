@@ -6,6 +6,31 @@ The 'app' folder contains a Python project that uses the Flask framework to crea
 
 The 'client' folder contains a Quasar project that uses Vue.js to interact with the REST API.
 
+## Requirements for Client
+
+- Node.js
+- Yarn
+
+## Getting Client to work
+
+Go to the 'client' folder and run the following commands:
+
+```bash
+yarn install
+```
+
+### Start the app in development mode (hot-code reloading, error reporting, etc.)
+
+```bash
+yarn run dev
+```
+
+### Build the app for production
+
+```bash
+yarn run build
+```
+
 ## Authors
 
 - [Konrad Figura](mailto:mail@kfigura.nl)
