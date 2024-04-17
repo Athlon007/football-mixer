@@ -8,8 +8,8 @@ The 'client' folder contains a Quasar project that uses Vue.js to interact with 
 
 ## Authors
 
-- [Konrad Figura](mail@kfigura.nl)
-- [Rareş Simion](683655@student.inholland.nl)
-- [Rodrigo Bange](rodrigo99@live.nl)
-- [Philip Tsagli](682624@student.inholland.nl)
-- [Mirko Cuccurullo](691362@student.inholland.nl>)
+- [Konrad Figura](mailto:mail@kfigura.nl)
+- [Rareş Simion](mailto:683655@student.inholland.nl)
+- [Rodrigo Bange](mailto:rodrigo99@live.nl)
+- [Philip Tsagli](mailto:682624@student.inholland.nl)
+- [Mirko Cuccurullo](mailto:691362@student.inholland.nl>)
