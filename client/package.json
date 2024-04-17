@@ -1,9 +1,16 @@
 {
   "name": "football-mixer-client",
   "version": "0.0.1",
-  "description": "A Quasar Project",
+  "description": "A client app for the Football Mixer project",
   "productName": "Football Mixer Client",
-  "author": "Konrad Figura <konrad@trone.nl>",
+  "author": "Konrad Figura <mail@kfigura.nl>",
+  "contributors": [
+    "Rareş Simion <683655@student.inholland.nl>",
+    "Konrad Figura <mail@kfigura.nl>",
+    "Rodrigo Bange <rodrigo99@live.nl",
+    "Philip Tsagli <682624@student.inholland.nl>",
+    "Mirko Cuccurullo <691362@student.inholland.nl>"
+  ],
   "private": true,
   "scripts": {
     "test": "echo \"No test specified\" && exit 0",
