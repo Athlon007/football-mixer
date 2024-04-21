@@ -4,7 +4,6 @@
       <football-field />
     </div>
 
-
     <div class="full-width">
       <sliders />
     </div>
