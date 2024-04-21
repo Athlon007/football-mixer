@@ -42,7 +42,7 @@ yarn run build
 For the initial setup, you need a virtual environment. To create one, run the following commands:
 
 ```bash
-python3 -m venv venv
+python3 -m venv .venv
 ```
 
 I **HIGHLY** recommend modifying the `.venv/bin/activate` file to include the following line at the end:
