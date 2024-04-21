@@ -32,3 +32,14 @@ def handle_message(message):
     socketio.emit('message_response', {
         'response': msg
         })
+
+@api.route('/')
+class SocketIODocs(Resource):
+    def get(self):
+        """
+        Documentation for SocketIO Events:
+        - **connect**: Triggered when a client connects to the WebSocket.
+        - **disconnect**: Triggered when a client disconnects from the WebSocket.
+        - **message**: Client sends a message, server processes and responds with the reversed message.
+        """
+        return {"message": "This endpoint is for documentation purposes only"}, 200
