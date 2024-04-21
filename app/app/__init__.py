@@ -1,5 +1,6 @@
 from flask_restx import Api
 from flask import Blueprint
+# and now the socketio import
 
 from .main.controller.mixer_controller import api as mixer_ns
 from .main.controller.system_controller import api as system_ns
@@ -8,9 +9,9 @@ blueprint = Blueprint('api', __name__)
 
 api = Api(
     blueprint,
-    title='FLASK RESTPLUS(RESTX) API BOILER-PLATE WITH JWT',
+    title='Foodball Mixer API',
     version='1.0',
-    description='a boilerplate for flask restplus (restx) web service',
+    description='AI-powered foodball mixer API',
     security='apikey'
 )
 
