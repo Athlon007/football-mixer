@@ -19,8 +19,11 @@ socketio = SocketIO()
 def create_app(config_name: str) -> Flask:
     app = Flask(__name__, static_url_path='/static')
     CORS(app)
-    app.config.from_object(config_by_name[config_name])
 
-    socketio.init_app(app)
+    config_file = config_by_name[config_name]
+
+    app.config.from_object(config_file)
+
+    socketio.init_app(app, cors_allowed_origins=','.join(config_file.ALLOWED_HOSTS))
 
     return app

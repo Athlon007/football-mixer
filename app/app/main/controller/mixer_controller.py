@@ -25,10 +25,10 @@ def handle_connect():
 def handle_disconnect():
     print('Client disconnected')
 
-@socketio.on('message', namespace='/mixer')
+@socketio.on('message')
 def handle_message(message):
     print('received message: ' + message)
     msg = message[::-1]
     socketio.emit('message_response', {
         'response': msg
-        }, namespace='/mixer')
+        })
