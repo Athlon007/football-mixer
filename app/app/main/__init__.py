@@ -3,7 +3,7 @@ from flask_socketio import SocketIO
 
 import tensorflow as tf
 from tensorflow import keras
-from tensorflow.keras.models import load_model, Sequential
+from keras.models import load_model
 
 from .config import config_by_name
 from flask.app import Flask
@@ -15,6 +15,7 @@ ml_model = load_model('model.h5')
 print('Model Loaded')
 
 socketio = SocketIO()
+
 
 def create_app(config_name: str) -> Flask:
     app = Flask(__name__, static_url_path='/static')
