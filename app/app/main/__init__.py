@@ -11,8 +11,8 @@ from flask.app import Flask
 from flask_cors import CORS
 
 print('Loading Model...')
-ml_model = load_model('model.h5')
-print('Model Loaded')
+ml_model = load_model('model2.h5')
+print(f'Model Loaded')
 
 socketio = SocketIO()
 

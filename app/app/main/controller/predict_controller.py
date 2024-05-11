@@ -1,22 +1,36 @@
-from flask import request
-from flask_restx import Resource, Namespace
+from flask_restx import Resource, Namespace, reqparse
 import librosa
-
-from .. import socketio
+import numpy as np
+from PIL import Image
+import werkzeug.datastructures
+from .. import ml_model, socketio
 from ..service.audio_service import transform_audio_to_spectrogram
-from .. import ml_model
 
-api = Namespace('predict', description='prediction related operations')
+api = Namespace('predict', description='Prediction related operations')
 
-from werkzeug.datastructures import FileStorage
-from flask_restx import reqparse
-
+# Define the file upload parser
 file_upload_parser = reqparse.RequestParser()
 file_upload_parser.add_argument('file',
-                                type=FileStorage,
+                                type=werkzeug.datastructures.FileStorage,
                                 location='files',
                                 required=True,
-                                help='Audio file')
+                                help='WAV audio file')
+
+
+def resize_spectrogram_image(image, target_size=(100, 100)):
+    # Convert to PIL Image
+    image_pil = Image.fromarray(image.astype('uint8'))
+
+    # Resize the image
+    image_resized = image_pil.resize(target_size)
+
+    # Convert to RGB mode
+    image_resized = image_resized.convert('RGB')
+
+    # Convert back to numpy array
+    image_resized_np = np.array(image_resized)
+
+    return image_resized_np
 
 
 @api.route('/predict')
@@ -35,8 +49,17 @@ class Predict(Resource):
 
         # Now you can use the audio data and sample rate in your method
         spectrogram_image = transform_audio_to_spectrogram(y, sr)
-        prediction = ml_model.predict(spectrogram_image)
 
-        # download image
-        spectrogram_image.save('spectrogram.png')
+        # Resize the spectrogram image to match the model's input shape
+        resized_spectrogram = resize_spectrogram_image(spectrogram_image)
+
+        # Convert to float32 and normalize if required
+        resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0  # Normalizing to [0, 1]
+
+        prediction = ml_model.predict(np.expand_dims(resized_spectrogram, axis=0)).tolist()
+
+        print("Prediction done")
+        # Save the spectrogram image
+        Image.fromarray(spectrogram_image.astype('uint8')).convert('RGB').save('spectrogram.png')
+
         return {'prediction': prediction}, 200
