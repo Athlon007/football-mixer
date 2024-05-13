@@ -12,7 +12,7 @@ from flask_cors import CORS
 
 print('Loading Model...')
 ml_model = load_model('model2.h5')
-print(f'Model Loaded')
+print('Model Loaded')
 
 socketio = SocketIO()
 
@@ -25,6 +25,8 @@ def create_app(config_name: str) -> Flask:
 
     app.config.from_object(config_file)
 
-    socketio.init_app(app, cors_allowed_origins=','.join(config_file.ALLOWED_HOSTS))
+    socketio.init_app(app,
+                      cors_allowed_origins=','.join(config_file.ALLOWED_HOSTS)
+                      )
 
     return app

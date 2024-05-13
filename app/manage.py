@@ -7,9 +7,11 @@ app.register_blueprint(blueprint)
 
 app.app_context().push()
 
+
 @app.shell_context_processor
 def make_shell_context():
     return dict()
+
 
 if __name__ == '__main__':
     print('Starting the socketio server')

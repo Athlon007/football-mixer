@@ -3,7 +3,7 @@ import librosa
 import numpy as np
 from PIL import Image
 import werkzeug.datastructures
-from .. import ml_model, socketio
+from .. import ml_model
 from ..service.audio_service import transform_audio_to_spectrogram
 
 api = Namespace('predict', description='Prediction related operations')
@@ -44,7 +44,8 @@ class Predict(Resource):
         args = file_upload_parser.parse_args()
         audio_file = args['file']
 
-        # Read the audio data from the FileStorage object and get the sample rate
+        # Read the audio data from the FileStorage object and get
+        # the sample rate
         y, sr = librosa.load(audio_file)
 
         # Now you can use the audio data and sample rate in your method
@@ -54,12 +55,17 @@ class Predict(Resource):
         resized_spectrogram = resize_spectrogram_image(spectrogram_image)
 
         # Convert to float32 and normalize if required
-        resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0  # Normalizing to [0, 1]
+        # Normalizing to [0, 1]
+        resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0
 
-        prediction = ml_model.predict(np.expand_dims(resized_spectrogram, axis=0)).tolist()
+        prediction = ml_model.predict(
+            np.expand_dims(resized_spectrogram, axis=0)
+            ).tolist()
 
         print("Prediction done")
         # Save the spectrogram image
-        Image.fromarray(spectrogram_image.astype('uint8')).convert('RGB').save('spectrogram.png')
+        Image.fromarray(spectrogram_image.astype('uint8')) \
+            .convert('RGB') \
+            .save('spectrogram.png')
 
         return {'prediction': prediction}, 200

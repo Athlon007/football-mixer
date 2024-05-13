@@ -1,0 +1,35 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  lint-and-test:
+    name: Linting and Testing
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.9'  # Specify the Python version you're using
+
+    - name: Install dependencies
+      run: |
+        cd app
+        python -m venv .venv
+        source .venv/bin/activate
+        python -m pip cache purge
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+        deactivate
+
+    # - name: Lint with pylint
+    #   run: |
+    #     pylint app
+
+    # - name: Run tests
+    #   run: |
+    #     pytest
