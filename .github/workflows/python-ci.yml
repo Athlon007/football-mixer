@@ -19,9 +19,12 @@ jobs:
     - name: Install dependencies
       run: |
         cd app
+        python -m venv .venv
+        source .venv/bin/activate
         python -m pip cache purge
         python -m pip install --upgrade pip
         pip install -r requirements.txt
+        deactivate
 
     # - name: Lint with pylint
     #   run: |
