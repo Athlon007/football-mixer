@@ -80,6 +80,23 @@ For hot-reloading, you can use the following command:
 ```bash
 python3.9 -m flask --debug run
 ```
+## Run backend with Docker 
+
+go in the app folder:
+
+```bash
+cd app
+```
+
+build the image
+```bash
+docker build dockerfile .
+```
+
+run the docker image with this:
+```bash
+docker run -p 5000:5000 dockerfile
+```
 
 ## Usage with Postman
 
