@@ -1,4 +1,3 @@
-from flask import request
 from flask_restx import Resource, Namespace
 
 from .. import socketio
@@ -6,6 +5,7 @@ from .. import socketio
 from typing import Dict, Tuple
 
 api = Namespace('mixer', description='mixer related operations')
+
 
 @api.route('/status')
 class SystemStatus(Resource):
@@ -21,9 +21,11 @@ class SystemStatus(Resource):
 def handle_connect():
     print('Client connected')
 
+
 @socketio.on('disconnect')
 def handle_disconnect():
     print('Client disconnected')
+
 
 @socketio.on('message')
 def handle_message(message):
@@ -32,6 +34,7 @@ def handle_message(message):
     socketio.emit('message_response', {
         'response': msg
         })
+
 
 @api.route('/')
 class SocketIODocs(Resource):
