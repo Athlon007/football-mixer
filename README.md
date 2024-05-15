@@ -88,14 +88,14 @@ go in the app folder:
 cd app
 ```
 
-build the image
+build the image:
 ```bash
-docker build dockerfile .
+docker compose build
 ```
 
-run the docker image with this:
+run the docker container with this:
 ```bash
-docker run -p 5000:5000 dockerfile
+docker docker compose up -d
 ```
 
 ## Usage with Postman
