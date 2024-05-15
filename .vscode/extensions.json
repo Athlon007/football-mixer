@@ -1,6 +1,5 @@
 {
     "recommendations": [
-        "ms-python.pylint",
         "njpwerner.autodocstring",
         "KevinRose.vsc-python-indent"
     ]
