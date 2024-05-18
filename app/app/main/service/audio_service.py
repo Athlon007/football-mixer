@@ -4,6 +4,24 @@ import cv2
 import librosa
 import numpy as np
 from scipy.signal import spectrogram
+import soundfile as sf
+from PIL import Image
+from .. import ml_model
+
+def resize_spectrogram_image(image, target_size=(100, 100)):
+    # Convert to PIL Image
+    image_pil = Image.fromarray(image.astype('uint8'))
+
+    # Resize the image
+    image_resized = image_pil.resize(target_size)
+
+    # Convert to RGB mode
+    image_resized = image_resized.convert('RGB')
+
+    # Convert back to numpy array
+    image_resized_np = np.array(image_resized)
+
+    return image_resized_np
 
 
 def transform_audio_to_spectrogram(y, sr):
@@ -24,3 +42,22 @@ def transform_audio_to_spectrogram(y, sr):
     resized_spectrogram = cv2.resize(uint8_spectrogram, (100, 100))
 
     return resized_spectrogram
+
+
+def process_audio_stream(audio_file, callback):
+    y, sr = sf.read(audio_file)
+    CHUNK_SIZE = sr 
+
+    for start in range(0, len(y), CHUNK_SIZE):
+        end = start + CHUNK_SIZE
+        audio_data = y[start:end]
+        if len(audio_data) < CHUNK_SIZE:
+            audio_data = np.pad(audio_data, (0, CHUNK_SIZE - len(audio_data)), mode='constant')
+        
+        spectrogram = transform_audio_to_spectrogram(audio_data, sr)
+
+        prediction = callback(spectrogram)
+
+        print(prediction) 
+        
+    print("Processing complete.")
