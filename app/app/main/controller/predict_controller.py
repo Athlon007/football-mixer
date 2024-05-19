@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import werkzeug.datastructures
 from .. import ml_model
-from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream,resize_spectrogram_image, process_audio_stream_new
+from ..service.audio_service import transform_audio_to_spectrogram,process_audio_stream_newest, process_audio_stream,resize_spectrogram_image, process_audio_stream_new
 from .. import socketio
 
 api = Namespace('predict', description='Prediction related operations')
@@ -44,9 +44,7 @@ class Predict(Resource):
         # Normalizing to [0, 1]
         resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0
 
-        prediction = ml_model.predict(
-            np.expand_dims(resized_spectrogram, axis=0)
-            ).tolist()
+        prediction = ml_model.predict(resized_spectrogram)
 
         print("Prediction done")
         # Save the spectrogram image
@@ -89,5 +87,5 @@ def handle_audio_analysis(input):
         prediction = ml_model.predict(np.expand_dims(resized_spectrogram, axis=0))
         return prediction
 
-    prediction = process_audio_stream_new(audio_data, callback)
+    prediction = process_audio_stream_newest(audio_data, callback)
     return socketio.emit('prediction', prediction)
