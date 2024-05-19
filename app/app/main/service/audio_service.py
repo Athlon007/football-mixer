@@ -94,7 +94,7 @@ def process_audio_stream_new(audio_data, callback):
 
         # save spectogram into /temp
         unix_timestamp = int(time.time())
-        Image.fromarray(spectrogram.astype('uint8')).convert('RGB').save('temp/spectrogram' + str(unix_timestamp) + '.png')
+        #Image.fromarray(spectrogram.astype('uint8')).convert('RGB').save('temp/spectrogram' + str(unix_timestamp) + '.png')
 
         prediction = callback(spectrogram)
 
