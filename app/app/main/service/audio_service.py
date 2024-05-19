@@ -6,7 +6,6 @@ import numpy as np
 from scipy.signal import spectrogram
 import soundfile as sf
 from PIL import Image
-from .. import ml_model
 
 def resize_spectrogram_image(image, target_size=(100, 100)):
     # Convert to PIL Image
@@ -45,19 +44,26 @@ def transform_audio_to_spectrogram(y, sr):
 
 
 def process_audio_stream(audio_file, callback):
-    y, sr = sf.read(audio_file)
-    CHUNK_SIZE = sr 
+    y, sr = librosa.load(audio_file, sr=None)  # Load audio with original sampling rate
+    CHUNK_SIZE = 3 * sr  # Define chunk size of 3 seconds
 
     for start in range(0, len(y), CHUNK_SIZE):
         end = start + CHUNK_SIZE
         audio_data = y[start:end]
         if len(audio_data) < CHUNK_SIZE:
             audio_data = np.pad(audio_data, (0, CHUNK_SIZE - len(audio_data)), mode='constant')
-        
+
         spectrogram = transform_audio_to_spectrogram(audio_data, sr)
 
         prediction = callback(spectrogram)
-
-        print(prediction) 
         
+        if prediction.argmax() == 0:
+            print("Ball detected...Volume UP")
+        elif prediction.argmax() == 1:
+            print("Whistle detected... Vuolume UP")
+        else:
+            print("Unknown sound detected...VOlume DOWN")
+
+        print(prediction)
+
     print("Processing complete.")
