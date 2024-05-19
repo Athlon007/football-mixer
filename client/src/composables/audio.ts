@@ -50,7 +50,7 @@ export function useAudio() {
           audioChunks = [];
 
           audioChunks.push(e.data);
-          if (isRecording) {
+          if (isRecording.value) {
             sendAudioData(new Blob(audioChunks));
           }
         };
