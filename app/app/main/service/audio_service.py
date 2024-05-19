@@ -7,6 +7,7 @@ from scipy.signal import spectrogram
 import soundfile as sf
 from PIL import Image
 from .. import socketio
+import time
 
 def resize_spectrogram_image(image, target_size=(100, 100)):
     # Convert to PIL Image
@@ -81,12 +82,20 @@ def process_audio_stream_new(audio_data, callback):
     global audio_buffer
     audio_buffer = np.concatenate((audio_buffer, audio_data))
 
+    result = "No prediction"
+    prediction_list = []
+
     CHUNK_SIZE = BUFFER_SIZE * SAMPLE_RATE
     while len(audio_buffer) >= CHUNK_SIZE:
         chunk = audio_buffer[:CHUNK_SIZE]
         audio_buffer = audio_buffer[CHUNK_SIZE:]
 
         spectrogram = transform_audio_to_spectrogram(chunk, SAMPLE_RATE)
+
+        # save spectogram into /temp
+        unix_timestamp = int(time.time())
+        Image.fromarray(spectrogram.astype('uint8')).convert('RGB').save('temp/spectrogram' + str(unix_timestamp) + '.png')
+
         prediction = callback(spectrogram)
 
         if prediction.argmax() == 0:
@@ -96,6 +105,9 @@ def process_audio_stream_new(audio_data, callback):
         else:
             result = "Unknown sound detected...Volume DOWN"
 
+        prediction_list = prediction.tolist()
+
         print(result)
         print(prediction)
-        return {'result': result, 'prediction': prediction.tolist()}
+
+    return {'result': result, 'prediction': prediction_list}

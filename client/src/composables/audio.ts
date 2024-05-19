@@ -59,7 +59,7 @@ export function useAudio() {
         if (mediaRecorder.state === 'recording') {
           mediaRecorder.stop();
         }
-        mediaRecorder.start(3000);
+        mediaRecorder.start(1000);
 
       } catch (error) {
         // User probably denied access to that mic. Skip it!
@@ -87,6 +87,7 @@ export function useAudio() {
 
 
   socket.on('prediction', (data: PredictionResponse) => {
+    console.log('prediction', data);
     prediction.value = data;
   })
 
