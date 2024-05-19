@@ -57,7 +57,7 @@ def process_audio_stream(audio_file, callback):
         spectrogram = transform_audio_to_spectrogram(audio_data, sr)
 
         prediction = callback(spectrogram)
-        
+
         if prediction.argmax() == 0:
             result = "Ball detected...Volume UP"
         elif prediction.argmax() == 1:
@@ -68,5 +68,34 @@ def process_audio_stream(audio_file, callback):
         output = {'result': result, 'prediction': prediction.tolist()}
         print(output)
         return output
-    
+
     print("Processing complete.")
+
+BUFFER_SIZE = 3  # Buffer size in seconds
+SAMPLE_RATE = 22050  # Example sample rate, should match your audio input
+
+# Buffer to hold incoming audio data
+audio_buffer = np.array([])
+
+def process_audio_stream_new(audio_data, callback):
+    global audio_buffer
+    audio_buffer = np.concatenate((audio_buffer, audio_data))
+
+    CHUNK_SIZE = BUFFER_SIZE * SAMPLE_RATE
+    while len(audio_buffer) >= CHUNK_SIZE:
+        chunk = audio_buffer[:CHUNK_SIZE]
+        audio_buffer = audio_buffer[CHUNK_SIZE:]
+
+        spectrogram = transform_audio_to_spectrogram(chunk, SAMPLE_RATE)
+        prediction = callback(spectrogram)
+
+        if prediction.argmax() == 0:
+            result = "Ball detected...Volume UP"
+        elif prediction.argmax() == 1:
+            result = "Whistle detected...Volume UP"
+        else:
+            result = "Unknown sound detected...Volume DOWN"
+
+        print(result)
+        print(prediction)
+        return {'result': result, 'prediction': prediction.tolist()}

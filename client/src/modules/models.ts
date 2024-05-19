@@ -10,3 +10,8 @@ export interface Meta {
 export interface TestMessage {
   response: string;
 }
+
+export interface PredictionResponse {
+  result: string;
+  prediction: number[][];
+}
