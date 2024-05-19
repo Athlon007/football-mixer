@@ -6,6 +6,7 @@ import numpy as np
 from scipy.signal import spectrogram
 import soundfile as sf
 from PIL import Image
+from .. import socketio
 
 def resize_spectrogram_image(image, target_size=(100, 100)):
     # Convert to PIL Image
@@ -58,12 +59,14 @@ def process_audio_stream(audio_file, callback):
         prediction = callback(spectrogram)
         
         if prediction.argmax() == 0:
-            print("Ball detected...Volume UP")
+            result = "Ball detected...Volume UP"
         elif prediction.argmax() == 1:
-            print("Whistle detected... Vuolume UP")
+            result = "Whistle detected...Volume UP"
         else:
-            print("Unknown sound detected...VOlume DOWN")
+            result = "Unknown sound detected...Volume DOWN"
 
-        print(prediction)
-
+        output = {'result': result, 'prediction': prediction.tolist()}
+        print(output)
+        return output
+    
     print("Processing complete.")
