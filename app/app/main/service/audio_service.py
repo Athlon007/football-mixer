@@ -131,19 +131,20 @@ def transform_audio_to_spectrogram(y, sr):
 
     return resized_spectrogram
 
-def process_audio_stream_newest(audio_data, callback):
+def process_audio_stream_newest(audio_data, callback, sample_rate):
     global audio_buffer
     audio_buffer = np.concatenate((audio_buffer, audio_data))
+    
 
     result = "No prediction"
     prediction_list = []
 
-    CHUNK_SIZE = BUFFER_SIZE * SAMPLE_RATE
+    CHUNK_SIZE = BUFFER_SIZE * sample_rate
     while len(audio_buffer) >= CHUNK_SIZE:
         chunk = audio_buffer[:CHUNK_SIZE]
         audio_buffer = audio_buffer[CHUNK_SIZE:]
 
-        spectrogram = transform_audio_to_spectrogram(chunk, SAMPLE_RATE)
+        spectrogram = transform_audio_to_spectrogram(chunk, sample_rate)
 
         # Convert spectrogram to uint8 image for saving
         spectrogram_img = (spectrogram / spectrogram.max() * 255).astype('uint8')

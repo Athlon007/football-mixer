@@ -77,8 +77,9 @@ class StartMix(Resource):
 
 
 @socketio.on('audio_stream')
-def handle_audio_analysis(input):
-    audio_data = np.frombuffer(input, dtype=np.float32)
+def handle_audio_analysis(data):
+    audio_data = np.frombuffer(data['audioData'], dtype=np.float32)
+    sample_rate = data['sampleRate']
 
     def callback(spectrogram):
         # Example callback function using the ML model
@@ -87,5 +88,5 @@ def handle_audio_analysis(input):
         prediction = ml_model.predict(np.expand_dims(resized_spectrogram, axis=0))
         return prediction
 
-    prediction = process_audio_stream_newest(audio_data, callback)
+    prediction = process_audio_stream_newest(audio_data, callback, sample_rate)
     return socketio.emit('prediction', prediction)
