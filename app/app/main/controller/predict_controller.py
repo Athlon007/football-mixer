@@ -5,6 +5,7 @@ from PIL import Image
 import werkzeug.datastructures
 from .. import ml_model
 from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream
+import concurrent.futures
 
 api = Namespace('predict', description='Prediction related operations')
 
@@ -14,7 +15,9 @@ file_upload_parser.add_argument('file',
                                 type=werkzeug.datastructures.FileStorage,
                                 location='files',
                                 required=True,
-                                help='WAV audio file')
+                                help='WAV audio file',
+                                action='append')
+
 
 
 def resize_spectrogram_image(image, target_size=(100, 100)):
@@ -34,23 +37,36 @@ def resize_spectrogram_image(image, target_size=(100, 100)):
 
 @api.route('/start')
 class StartMix(Resource):
-    """
-        Start mixing audio
-    """
     @api.expect(file_upload_parser)
     def post(self):
         args = file_upload_parser.parse_args()
-        audio_file = args['file']
+        audio_files = args['file']
 
+        results = {}
+        
         def callback(spectrogram):
-            # Example callback function using the ML model
             resized_spectrogram = resize_spectrogram_image(spectrogram)
             resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0
             prediction = ml_model.predict(np.expand_dims(resized_spectrogram, axis=0))
             return prediction
 
-        process_audio_stream(audio_file, callback)
-        return {"message": "Audio processing started"}, 200
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            future_to_index = {executor.submit(process_audio_stream, audio_file, callback, index): index for index, audio_file in enumerate(audio_files)}
+
+            for future in concurrent.futures.as_completed(future_to_index):
+                file_index = future_to_index[future]
+                try:
+                    index, file_results = future.result()
+                    results[index] = file_results
+                except Exception as exc:
+                    print(f"File {file_index} generated an exception: {exc}")
+
+        # Analyze results to determine the best source to listen to
+        # Dummy logic for determining the best audio source
+        best_source = max(results, key=lambda k: results[k][0]['prediction'][0])
+        best_output = results[best_source]
+
+        return {"message": "Audio processing completed", "best_source": best_source, "best_output": best_output}, 200
 
 
 @api.route('/predict')

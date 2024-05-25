@@ -42,10 +42,11 @@ def transform_audio_to_spectrogram(y, sr):
     return resized_spectrogram
 
 
-def process_audio_stream(audio_file, callback):
+def process_audio_stream(audio_file, callback, file_index):
     y, sr = librosa.load(audio_file, sr=None)  # Load audio with original sampling rate
-    CHUNK_SIZE = int(0.08 * sr)  # Define chunk size of 3 seconds
+    CHUNK_SIZE = int(0.08 * sr)  # Define chunk size of 80 milliseconds
 
+    results = []
     for start in range(0, len(y), CHUNK_SIZE):
         end = start + CHUNK_SIZE
         audio_data = y[start:end]
@@ -53,7 +54,6 @@ def process_audio_stream(audio_file, callback):
             audio_data = np.pad(audio_data, (0, CHUNK_SIZE - len(audio_data)), mode='constant')
 
         spectrogram = transform_audio_to_spectrogram(audio_data, sr)
-
         prediction = callback(spectrogram)
 
         if prediction.argmax() == 0:
@@ -64,11 +64,11 @@ def process_audio_stream(audio_file, callback):
             result = "Unknown sound detected...Volume DOWN"
 
         output = {'result': result, 'prediction': prediction.tolist()}
-        print(output)
-        # return output
+        results.append(output)
+        print(f"File {file_index} Chunk {start // CHUNK_SIZE}: {output}")
 
-    print("Processing complete.")
-    return {'message': 'Processing complete'}
+    print(f"Processing complete for file {file_index}.")
+    return file_index, results
 
 BUFFER_SIZE = 3  # Buffer size in seconds
 SAMPLE_RATE = 22050  # Example sample rate, should match your audio input
