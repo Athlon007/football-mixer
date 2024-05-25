@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import werkzeug.datastructures
 from .. import ml_model
-from ..service.audio_service import transform_audio_to_spectrogram
+from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream
 
 api = Namespace('predict', description='Prediction related operations')
 
@@ -31,6 +31,26 @@ def resize_spectrogram_image(image, target_size=(100, 100)):
     image_resized_np = np.array(image_resized)
 
     return image_resized_np
+
+@api.route('/start')
+class StartMix(Resource):
+    """
+        Start mixing audio
+    """
+    @api.expect(file_upload_parser)
+    def post(self):
+        args = file_upload_parser.parse_args()
+        audio_file = args['file']
+
+        def callback(spectrogram):
+            # Example callback function using the ML model
+            resized_spectrogram = resize_spectrogram_image(spectrogram)
+            resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0
+            prediction = ml_model.predict(np.expand_dims(resized_spectrogram, axis=0))
+            return prediction
+
+        process_audio_stream(audio_file, callback)
+        return {"message": "Audio processing started"}, 200
 
 
 @api.route('/predict')
