@@ -12,4 +12,4 @@ class SystemStatus(Resource):
     """
     @api.doc('get system status')
     def get(self) -> Tuple[Dict[str, str], int]:
-        return {'status': 'up'}, 200
+        return {'status': 'upppp'}, 200
