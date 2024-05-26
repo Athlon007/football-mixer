@@ -93,9 +93,9 @@ build the image:
 docker compose build
 ```
 
-run the docker container with this:
+run the docker container with this (with watch for hot-reloading):
 ```bash
-docker docker compose up -d
+docker compose up --watch
 ```
 
 ## Usage with Postman
