@@ -12,16 +12,5 @@ services:
       - FLASK_APP=manage.py
       - FLASK_ENV=development
       - FLASK_DEBUG=1
-    command: flask run --host=0.0.0.0 --debug
-    develop:
-      watch:
-        - action: sync
-          path: .
-          target: /app
-          ignore:
-            - .venv
-            - __pycache__
-            - "*.pyc"
-            - "*.pyo"
-        - action: rebuild
-          path: requirements.txt
+    command: flask run --host=0.0.0.0 --reload
+    

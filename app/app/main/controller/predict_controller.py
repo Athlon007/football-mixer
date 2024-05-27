@@ -6,6 +6,7 @@ import werkzeug.datastructures
 from .. import ml_model
 from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream
 import concurrent.futures
+import asyncio
 
 api = Namespace('predict', description='Prediction related operations')
 
@@ -105,3 +106,36 @@ class Predict(Resource):
             .save('spectrogram.png')
 
         return {'prediction': prediction}, 200
+    
+
+async def process_files(audio_files):
+    tasks = [process_audio_stream(audio_file, callback, index) for index, audio_file in enumerate(audio_files)]
+    return await asyncio.gather(*tasks)
+
+def callback(spectrogram):
+    resized_spectrogram = resize_spectrogram_image(spectrogram)
+    resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0
+    prediction = ml_model.predict(np.expand_dims(resized_spectrogram, axis=0))
+    return prediction
+
+@api.route('/new')
+class StartMixs(Resource):
+    @api.expect(file_upload_parser)
+    def post(self):
+        args = file_upload_parser.parse_args()
+        audio_files = args['file']
+        
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
+
+        try:
+            results = loop.run_until_complete(process_files(audio_files))
+            
+            # Analyze results to determine the best source to listen to
+            # Dummy logic for determining the best audio source
+            best_source = max(results, key=lambda x: x[1]['prediction'][0] if 'prediction' in x[1] else -float('inf'))
+            best_output = best_source[1]
+
+            return "Response printed in console", 200  # Dummy response
+        finally:
+            loop.close()
