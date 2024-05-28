@@ -41,6 +41,48 @@ def transform_audio_to_spectrogram(y, sr):
 
     return resized_spectrogram
 
+def filter_audio_data(audio_files, callback):
+    #future_to_index = {executor.submit(process_audio_stream, audio_file, callback, index): index for index, audio_file in enumerate(audio_files)}
+    
+    #return None
+    
+    #iterate through audio files using their index , and compare the results of the process_audio_stream function
+    results = []
+    for index, audio_file in enumerate(audio_files):
+        result = process_audio_stream(audio_file, callback, index)
+        results.append(result)
+        
+    #
+        
+def process_audio_stream_test(audio_file, callback, file_index):
+    y, sr = librosa.load(audio_file, sr=None)  # Load audio with original sampling rate
+    CHUNK_SIZE = int(0.08 * sr)  # Define chunk size of 80 milliseconds
+
+    results = []
+    for start in range(0, len(y), CHUNK_SIZE):
+        end = start + CHUNK_SIZE
+        audio_data = y[start:end]
+        if len(audio_data) < CHUNK_SIZE:
+            audio_data = np.pad(audio_data, (0, CHUNK_SIZE - len(audio_data)), mode='constant')
+
+        spectrogram = transform_audio_to_spectrogram(audio_data, sr)
+        prediction = callback(spectrogram)
+
+        if prediction.argmax() == 0:
+            result = "Ball detected...Volume UP"
+        elif prediction.argmax() == 1:
+            result = "Whistle detected...Volume UP"
+        else:
+            result = "Unknown sound detected...Volume DOWN"
+
+        output = {'result': result, 'prediction': prediction.tolist()}
+        results.append(output)
+        
+        chunk_size = start // CHUNK_SIZE
+        print(f"File {file_index} Chunk {chunk_size}: {output}")
+
+    print(f"Processing complete for file {file_index}.")
+    return file_index, results
 
 def process_audio_stream(audio_file, callback, file_index):
     y, sr = librosa.load(audio_file, sr=None)  # Load audio with original sampling rate
@@ -65,7 +107,9 @@ def process_audio_stream(audio_file, callback, file_index):
 
         output = {'result': result, 'prediction': prediction.tolist()}
         results.append(output)
-        print(f"File {file_index} Chunk {start // CHUNK_SIZE}: {output}")
+        
+        chunk_size = start // CHUNK_SIZE
+        print(f"File {file_index} Chunk {chunk_size}: {output}")
 
     print(f"Processing complete for file {file_index}.")
     return file_index, results

@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import werkzeug.datastructures
 from .. import ml_model
-from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream
+from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream, filter_audio_data
 import concurrent.futures
 
 api = Namespace('predict', description='Prediction related operations')
@@ -41,7 +41,6 @@ class StartMix(Resource):
     def post(self):
         args = file_upload_parser.parse_args()
         audio_files = args['file']
-
         results = {}
         
         def callback(spectrogram):
@@ -52,6 +51,7 @@ class StartMix(Resource):
 
         with concurrent.futures.ThreadPoolExecutor() as executor:
             future_to_index = {executor.submit(process_audio_stream, audio_file, callback, index): index for index, audio_file in enumerate(audio_files)}
+            #future_to_index = {executor.submit(filter_audio_data, audio_files, callback)}
 
             for future in concurrent.futures.as_completed(future_to_index):
                 file_index = future_to_index[future]
