@@ -20,6 +20,8 @@
   "dependencies": {
     "@quasar/extras": "^1.16.4",
     "axios": "^1.2.1",
+    "extendable-media-recorder": "^9.2.4",
+    "extendable-media-recorder-wav-encoder": "^7.0.111",
     "pinia": "^2.0.11",
     "quasar": "^2.8.0",
     "socket.io-client": "^4.7.5",

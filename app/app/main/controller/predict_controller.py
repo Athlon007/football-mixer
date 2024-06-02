@@ -17,6 +17,12 @@ file_upload_parser.add_argument('file',
                                 required=True,
                                 help='WAV audio file',
                                 action='append')
+# add batch_id to the parser
+file_upload_parser.add_argument('batch_id',
+                                type=str,
+                                location='form',
+                                required=True,
+                                help='Batch ID for the audio files')
 
 
 
@@ -41,8 +47,13 @@ class StartMix(Resource):
     def post(self):
         args = file_upload_parser.parse_args()
         audio_files = args['file']
+
+        # print count of audio files
+        print(f"Number of audio files: {len(audio_files)}")
+
+        batch_id = args['batch_id']
         results = {}
-        
+
         def callback(spectrogram):
             resized_spectrogram = resize_spectrogram_image(spectrogram)
             resized_spectrogram = resized_spectrogram.astype(np.float32) / 255.0
@@ -63,10 +74,12 @@ class StartMix(Resource):
 
         # Analyze results to determine the best source to listen to
         # Dummy logic for determining the best audio source
+        print('=== Results ===')
+        print(results)
         best_source = max(results, key=lambda k: results[k][0]['prediction'][0])
         best_output = results[best_source]
 
-        return {"message": "Audio processing completed", "best_source": best_source, "best_output": best_output}, 200
+        return { "batch_id": batch_id, "message": "Audio processing completed", "best_source": best_source, "best_output": best_output }, 200
 
 
 @api.route('/predict')

@@ -1,12 +1,21 @@
-export interface Todo {
-  id: number;
-  content: string;
+export interface PredictionResponse {
+  result: string;
+  prediction: number[][];
 }
 
-export interface Meta {
-  totalCount: number;
+export interface StartResponse {
+  batch_id: string;
+  message: string;
+  best_source: number; // Index of the best source
+  best_output: BestOutput;
 }
 
-export interface TestMessage {
-  response: string;
+export interface BestOutput {
+  result: string;
+  prediction: number[][];
+}
+
+export interface FilesBatch {
+  files: File[];
+  batchId: string;
 }
