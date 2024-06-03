@@ -19,3 +19,7 @@ export interface FilesBatch {
   files: File[];
   batchId: string;
 }
+
+export interface SystemStatusResponse {
+  status: string;
+}
