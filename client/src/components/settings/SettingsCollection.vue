@@ -10,6 +10,10 @@
 </template>
 
 <script setup lang="ts">
+/**
+ * A container for settings components.
+ */
+
 defineProps({
   title: {
     type: String,

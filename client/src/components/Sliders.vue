@@ -1,6 +1,6 @@
 <template>
-  <div class="row  flex-center">
-    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="col text-center">
+  <div class="row">
+    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="col text-center full-height">
       <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse />
       <div class="q-pt-md">
         <q-badge outline class="text-h5 bg-primary">

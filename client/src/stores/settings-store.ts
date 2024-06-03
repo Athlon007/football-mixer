@@ -13,6 +13,8 @@ export const useSettingsStore = defineStore("settings", () => {
 
   const devices = ref<DeviceEntry[]>([]);
   const initialized = ref(false);
+  /** Sample rate of the audio. */
+  const sampleRate = ref(1000);
 
   /**
    * Initializes the store by fetching the list of audio devices.
@@ -30,7 +32,7 @@ export const useSettingsStore = defineStore("settings", () => {
     nextTick(() => {
       // After initializing the devices, load the settings.
       initialized.value = true;
-      loadSettings();
+      //loadSettings();
     });
   })
 
@@ -85,6 +87,11 @@ export const useSettingsStore = defineStore("settings", () => {
           devices.value.splice(i, 0, devices.value.splice(index, 1)[0]);
         }
       }
+
+      const rate = localStorage.getItem('settings_sample_rate');
+      if (rate) {
+        sampleRate.value = parseInt(rate);
+      }
     }
   }
 
@@ -98,11 +105,25 @@ export const useSettingsStore = defineStore("settings", () => {
   }, { deep: true });
 
   /**
-   * Returns the labels of the microphones.
+   * Returns the labels of the active microphones.
    */
   const micLabels = computed(() => {
     const labels = usedDevices.value.map((n) => n.label.replace('Microphone (', '').replace(')', ''));
     return labels;
+  });
+
+  /**
+   * Returns the labels of all the microphones.
+   */
+  const allMicsLabels = computed(() => {
+    return devices.value.map((n) => n.device.label.replace('Microphone (', '').replace(')', ''));
+  });
+
+  /**
+   * Observes the sample rate and saves the settings to the local storage.
+   */
+  watch(sampleRate, () => {
+    localStorage.setItem('settings_sample_rate', sampleRate.value.toString());
   });
 
   return {
@@ -110,6 +131,8 @@ export const useSettingsStore = defineStore("settings", () => {
     usedDevices,
     moveDeviceUp,
     moveDeviceDown,
-    micLabels
+    micLabels,
+    sampleRate,
+    allMicsLabels
   };
 });

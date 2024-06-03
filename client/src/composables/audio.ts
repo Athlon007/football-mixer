@@ -10,7 +10,7 @@ import { useSettingsStore } from "src/stores/settings-store";
  */
 export function useAudio() {
   const settingsStore = useSettingsStore();
-
+  const debugDownloadFiles = ref(false);
   const isRecording = ref(false);
 
   // List of batches of files to send
@@ -19,14 +19,18 @@ export function useAudio() {
   const prediction = ref<StartResponse | null>(null);
   const predictStore = usePredictStore();
 
-  const LENGTH_MS = 80;
+  const DELAY_BEFORE_NEXT_RECORDING = 40;
+
+  const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)();
+
+  const playbackQueue: { [batchId: string]: Blob } = {};
 
   onMounted(async () => {
     isRecording.value = false;
 
     // Register WAV encoder.
     await register(await connect());
-  })
+  });
 
   /**
    * Initialize a new batch of files.
@@ -36,7 +40,7 @@ export function useAudio() {
       files: [],
       batchId: Math.random().toString(36).substring(2)
     };
-  }
+  };
 
   /**
    * Start recording session and prediction process.
@@ -55,7 +59,7 @@ export function useAudio() {
       try {
         // Begin recording
         const stream = await navigator.mediaDevices.getUserMedia({
-          audio: { deviceId: device.deviceId }
+          audio: { deviceId: device.deviceId },
         });
 
         const mediaRecorder = new MediaRecorder(stream, { mimeType: 'audio/wav' });
@@ -75,21 +79,34 @@ export function useAudio() {
               return;
             }
             mediaRecorder.stop();
-          }, LENGTH_MS);
+          }, settingsStore.sampleRate);
         };
 
-        // On data available, save the audio file
-        mediaRecorder.ondataavailable = (e) => {
+        // On data available, save the audio file and play back the audio from the first microphone
+        mediaRecorder.ondataavailable = async (e) => {
           if (!isRecording.value) {
             return;
           }
 
           const audioBlob = e.data;
 
+          // DEBUG: save the audio file
+          if (debugDownloadFiles.value) {
+            const url = URL.createObjectURL(audioBlob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `audio-${Date.now()}_${device.label}.wav`;
+            a.click();
+            return;
+          }
+
           // Add to the list of files
           batch.files.push(new File([audioBlob], `audio-${Date.now()}.wav`, {
             type: 'audio/wav'
           }));
+
+          // Play back the audio from the first microphone
+          queuePlayback(batch.batchId, audioBlob);
 
           // Do we have enough files to send (should be amount of microphones)
           if (batch.files.length === settingsStore.usedDevices.length) {
@@ -113,7 +130,7 @@ export function useAudio() {
         mediaRecorder.onstop = () => {
           if (isRecording.value) {
             // Delay to ensure proper intervals between recordings
-            setTimeout(recordAudio, LENGTH_MS);
+            setTimeout(recordAudio, DELAY_BEFORE_NEXT_RECORDING);
           } else {
             stream.getTracks().forEach(track => track.stop());
           }
@@ -133,6 +150,16 @@ export function useAudio() {
   const stopRecording = () => {
     isRecording.value = false;
   };
+
+
+  const queuePlayback = async (batchId: string, audioBlob: Blob) => {
+    const arrayBuffer = await audioBlob.arrayBuffer();
+    const audioBuffer = await audioContext.decodeAudioData(arrayBuffer);
+    const audioBufferSource = audioContext.createBufferSource();
+    audioBufferSource.buffer = audioBuffer;
+    audioBufferSource.connect(audioContext.destination);
+    audioBufferSource.start();
+  }
 
   return {
     startRecording,

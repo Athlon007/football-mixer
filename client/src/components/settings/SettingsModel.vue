@@ -2,7 +2,11 @@
   <SettingsCollection title="Model">
     <q-select v-if="modelsStore.models" v-model="modelsStore.models.current_model" :options="modelsStore.models.models"
       option-label="name" option-value="name" emit-value map-options label="Model" @update:model-value="setModel"
-      :loading="loadingModels" />
+      :loading="loadingModels">
+      <template v-slot:prepend>
+        <q-icon name="settings" />
+      </template>
+    </q-select>
     <q-skeleton v-else height="3em" />
 
     <div class="q-gutter-y-sm">

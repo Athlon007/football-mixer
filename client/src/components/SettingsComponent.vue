@@ -8,13 +8,12 @@
 
     <q-separator />
 
-    <SettingsCollection title="Sampling">
-    </SettingsCollection>
+    <SettingsSamples />
   </div>
 </template>
 
 <script setup lang="ts">
-import SettingsCollection from './settings/SettingsCollection.vue';
 import SettingsInputDevices from './settings/SettingsInputDevices.vue';
 import SettingsModel from './settings/SettingsModel.vue';
+import SettingsSamples from './settings/SettingsSamples.vue';
 </script>
