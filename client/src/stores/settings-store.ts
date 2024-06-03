@@ -1,6 +1,10 @@
 import { defineStore } from "pinia";
 import { computed, nextTick, onMounted, ref, watch } from "vue";
 
+/**
+ * Store for managing the settings of the application.
+ * We use store for this, so that the settings are persisted across the sessions.
+ */
 export const useSettingsStore = defineStore("settings", () => {
   interface DeviceEntry {
     device: MediaDeviceInfo;
@@ -10,6 +14,9 @@ export const useSettingsStore = defineStore("settings", () => {
   const devices = ref<DeviceEntry[]>([]);
   const initialized = ref(false);
 
+  /**
+   * Initializes the store by fetching the list of audio devices.
+   */
   onMounted(async () => {
     let audioDevices = await navigator.mediaDevices.enumerateDevices();
     audioDevices = audioDevices.filter(device => device.kind === 'audioinput');
@@ -21,6 +28,7 @@ export const useSettingsStore = defineStore("settings", () => {
     });
 
     nextTick(() => {
+      // After initializing the devices, load the settings.
       initialized.value = true;
       loadSettings();
     });
@@ -57,6 +65,11 @@ export const useSettingsStore = defineStore("settings", () => {
     }
   }
 
+  /**
+   * Loads the settings from the local storage.
+   * This is called after initializing the devices.
+   * This will load the 'enabled' status of the devices and the order of the devices.
+   */
   const loadSettings = () => {
     const settingsDevices = localStorage.getItem('settings_devices');
     // Make sure that the device IDs are same as the ones in the current session.
@@ -75,16 +88,28 @@ export const useSettingsStore = defineStore("settings", () => {
     }
   }
 
+  /**
+   * Observes the devices and saves the settings to the local storage.
+   */
   watch(devices, () => {
     if (initialized.value) {
       localStorage.setItem('settings_devices', JSON.stringify(devices.value));
     }
   }, { deep: true });
 
+  /**
+   * Returns the labels of the microphones.
+   */
+  const micLabels = computed(() => {
+    const labels = usedDevices.value.map((n) => n.label.replace('Microphone (', '').replace(')', ''));
+    return labels;
+  });
+
   return {
     devices,
     usedDevices,
     moveDeviceUp,
-    moveDeviceDown
+    moveDeviceDown,
+    micLabels
   };
 });

@@ -5,11 +5,15 @@ import { MediaRecorder, register } from 'extendable-media-recorder';
 import { connect } from 'extendable-media-recorder-wav-encoder';
 import { useSettingsStore } from "src/stores/settings-store";
 
+/**
+ * Audio processing composable.
+ */
 export function useAudio() {
   const settingsStore = useSettingsStore();
 
   const isRecording = ref(false);
 
+  // List of batches of files to send
   let batches: FilesBatch[] = [];
 
   const prediction = ref<StartResponse | null>(null);
@@ -24,6 +28,9 @@ export function useAudio() {
     await register(await connect());
   })
 
+  /**
+   * Initialize a new batch of files.
+   */
   const initBatch = (): FilesBatch => {
     return {
       files: [],
@@ -31,6 +38,9 @@ export function useAudio() {
     };
   }
 
+  /**
+   * Start recording session and prediction process.
+   */
   const startRecording = async () => {
     isRecording.value = true;
 
@@ -43,6 +53,7 @@ export function useAudio() {
 
     for (let device of settingsStore.usedDevices) {
       try {
+        // Begin recording
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: { deviceId: device.deviceId }
         });
@@ -64,7 +75,7 @@ export function useAudio() {
               return;
             }
             mediaRecorder.stop();
-          }, LENGTH_MS); // 1 second recording
+          }, LENGTH_MS);
         };
 
         // On data available, save the audio file
@@ -74,13 +85,6 @@ export function useAudio() {
           }
 
           const audioBlob = e.data;
-
-          // DEBUG: save the audio file
-          //const url = URL.createObjectURL(audioBlob);
-          //const a = document.createElement('a');
-          //a.href = url;
-          //a.download = `audio-${Date.now()}.wav`;
-          //a.click();
 
           // Add to the list of files
           batch.files.push(new File([audioBlob], `audio-${Date.now()}.wav`, {
@@ -109,7 +113,7 @@ export function useAudio() {
         mediaRecorder.onstop = () => {
           if (isRecording.value) {
             // Delay to ensure proper intervals between recordings
-            setTimeout(recordAudio, LENGTH_MS); // Start new recording after 1 second
+            setTimeout(recordAudio, LENGTH_MS);
           } else {
             stream.getTracks().forEach(track => track.stop());
           }
@@ -123,6 +127,9 @@ export function useAudio() {
     }
   };
 
+  /**
+   * Stop the recording session.
+   */
   const stopRecording = () => {
     isRecording.value = false;
   };

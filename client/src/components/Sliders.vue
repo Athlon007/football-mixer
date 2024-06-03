@@ -4,12 +4,12 @@
       <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse />
       <div class="q-pt-md">
         <q-badge outline class="text-h5 bg-primary">
-          {{ micValues[index].toFixed(0) }}
+          {{ micValues[index]?.toFixed(0) }}
         </q-badge>
       </div>
 
       <div class="label">
-        {{ labels[index] }}
+        {{ settingsStore.micLabels[index] }}
       </div>
     </div>
   </div>
@@ -17,7 +17,7 @@
 
 <script setup lang="ts">
 import { useSettingsStore } from 'src/stores/settings-store';
-import { computed, onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 
 const settingsStore = useSettingsStore();
 
@@ -33,11 +33,6 @@ const totalFrames = (transitionDuration / 1000) * fps;
 
 onMounted(() => {
   initMics();
-});
-
-const labels = computed(() => {
-  const labels = settingsStore.usedDevices.map((n) => n.label.replace('Microphone (', '').replace(')', ''));
-  return labels;
 });
 
 watch(() => settingsStore.usedDevices, () => {

@@ -3,7 +3,7 @@ import librosa
 import numpy as np
 from PIL import Image
 import werkzeug.datastructures
-from .. import ml_model
+from app.main.service.model_service import ml_model
 from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream, filter_audio_data
 import concurrent.futures
 

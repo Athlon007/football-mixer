@@ -1,0 +1,18 @@
+[
+    {
+        "name": "mirphil_1000_1.0",
+        "version": "1.0",
+        "recommended_sampling_rate_ms": 1000,
+        "recommended": true
+    },
+    {
+        "name": "football_3000_1.0",
+        "version": "1.0",
+        "recommended_sampling_rate_ms": 3000
+    },
+    {
+        "name": "football_3000_2.0",
+        "version": "2.0",
+        "recommended_sampling_rate_ms": 3000
+    }
+]
