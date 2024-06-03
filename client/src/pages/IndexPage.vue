@@ -16,13 +16,12 @@
       <SystemStatusComponent />
 
       <div class="full-width">
-        <sliders ref="slidersRef" :microphones="audio.devices.value"
-          :best-microphone-index="audio.prediction.value?.best_source ?? -1" />
+        <sliders ref="slidersRef" :best-microphone-index="audio.prediction.value?.best_source ?? -1" />
       </div>
 
-      <!--div class="q-mt-xl">
+      <div v-if="showTranscript" class="q-mt-xl">
         <textarea class="full-width" rows="5" v-model="transcript" placeholder="Transcript" readonly />
-      </!--div-->
+      </div>
     </div>
   </q-page>
 </template>
@@ -36,6 +35,7 @@ import { computed, ref } from 'vue';
 
 const audio = useAudio();
 const slidersRef = ref<InstanceType<typeof Sliders> | null>(null);
+const showTranscript = ref(false);
 
 const transcript = computed(() => {
   return JSON.stringify(audio.prediction.value, null, 2);
@@ -43,8 +43,5 @@ const transcript = computed(() => {
 
 const stopRecording = () => {
   audio.stopRecording();
-  setTimeout(() => {
-    slidersRef.value?.resetSliders();
-  }, 1000);
 };
 </script>

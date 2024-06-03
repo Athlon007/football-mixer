@@ -1,11 +1,13 @@
-import { nextTick, ref } from "vue";
+import { onMounted, ref } from "vue";
 import { FilesBatch, StartResponse } from "src/modules/models";
 import { usePredictStore } from "src/stores/predict-store";
 import { MediaRecorder, register } from 'extendable-media-recorder';
 import { connect } from 'extendable-media-recorder-wav-encoder';
+import { useSettingsStore } from "src/stores/settings-store";
 
 export function useAudio() {
-  const devices = ref<MediaDeviceInfo[]>([]);
+  const settingsStore = useSettingsStore();
+
   const isRecording = ref(false);
 
   let batches: FilesBatch[] = [];
@@ -15,15 +17,12 @@ export function useAudio() {
 
   const LENGTH_MS = 80;
 
-  const init = async () => {
+  onMounted(async () => {
     isRecording.value = false;
-    devices.value = [];
-    devices.value = await navigator.mediaDevices.enumerateDevices();
-    devices.value = devices.value.filter(device => device.kind === 'audioinput');
 
     // Register WAV encoder.
     await register(await connect());
-  };
+  })
 
   const initBatch = (): FilesBatch => {
     return {
@@ -35,14 +34,14 @@ export function useAudio() {
   const startRecording = async () => {
     isRecording.value = true;
 
-    if (devices.value.length === 0) {
+    if (settingsStore.usedDevices.length === 0) {
       isRecording.value = false;
       throw new Error('No audio devices found');
     }
 
     let batch: FilesBatch = initBatch();
 
-    for (let device of devices.value) {
+    for (let device of settingsStore.usedDevices) {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: { deviceId: device.deviceId }
@@ -89,7 +88,7 @@ export function useAudio() {
           }));
 
           // Do we have enough files to send (should be amount of microphones)
-          if (batch.files.length === devices.value.length) {
+          if (batch.files.length === settingsStore.usedDevices.length) {
             const clone = { ...batch };
             if (batches.find(b => b.batchId === clone.batchId)) {
               // Already sent this batch
@@ -128,9 +127,7 @@ export function useAudio() {
     isRecording.value = false;
   };
 
-  init();
   return {
-    devices,
     startRecording,
     stopRecording,
     prediction,
