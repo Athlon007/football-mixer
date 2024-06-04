@@ -66,16 +66,36 @@ watch(() => settingsStore.usedDevices, () => {
 });
 
 const initMics = () => {
-  micValues.value = Array(settingsStore.usedDevices.length).fill(0);
-  currentMicValues.value = Array(settingsStore.usedDevices.length).fill(0);
-  // Redo below so that positions are saved, and on start they are aligned next to each other
-  squares.value = Array.from({ length: settingsStore.usedDevices.length }, (_, index) => ({
-    id: index + 1, 
-    x: 100 + index * 100,
-    y: 100,
-    active: false,
-  }));
+  // Load saved positions or initialize
+  if (localStorage.getItem('square_positions')) {
+    loadSquarePositions();
+  } else {
+    squares.value = Array.from({ length: settingsStore.usedDevices.length }, (_, index) => ({
+      id: index + 1, 
+      x: 100 + index * 100,
+      y: 100,
+      active: false,
+      enabled: settingsStore.usedDevices[index].enabled,
+    }));
+  }
 };
+
+watch(() => settingsStore.usedDevices, () => {
+  squares.value = settingsStore.devices.map((device, index) => {
+    const square = squares.value[index] || {
+      id: index + 1, 
+      x: 100 + index * 100,
+      y: 100,
+      active: false,
+      enabled: device.enabled,
+    };
+    return {
+      ...square,
+      enabled: device.enabled,
+    };
+  });
+  saveSquarePositions();
+}, { deep: true });
 
 watch(() => props.bestMicrophoneIndex, (newIndex) => {
   // Set square to active if it's the best microphone
@@ -101,9 +121,11 @@ const onMouseMove = (event) => {
     draggingSquare.value.x = Math.max(size / 2, Math.min(width - size / 2, draggingSquare.value.x));
     draggingSquare.value.y = Math.max(size / 2, Math.min(height - size / 2, draggingSquare.value.y));
 
-    // Snap to grid but smaller steps
+    // Snap to grid
     draggingSquare.value.x = Math.round(draggingSquare.value.x / gridSnap) * gridSnap;
     draggingSquare.value.y = Math.round(draggingSquare.value.y / gridSnap) * gridSnap;
+
+    saveSquarePositions();
   }
 };
 
@@ -111,6 +133,27 @@ const onMouseUp = () => {
   draggingSquare.value = null;
   window.removeEventListener('mousemove', onMouseMove);
   window.removeEventListener('mouseup', onMouseUp);
+  saveSquarePositions();
+};
+
+const saveSquarePositions = () => {
+  localStorage.setItem('square_positions', JSON.stringify(squares.value));
+};
+
+const loadSquarePositions = () => {
+  const savedPositions = localStorage.getItem('square_positions');
+  if (savedPositions) {
+    const positions = JSON.parse(savedPositions);
+    squares.value = positions.map((pos, index) => ({
+      id: pos.id || index + 1,
+      x: pos.x || 100 + index * 100,
+      y: pos.y || 100,
+      active: pos.active || false,
+      enabled: pos.enabled !== undefined ? pos.enabled : settingsStore.devices[index].enabled,
+    }));
+  }
+  // console if enabled
+  console.log('Loaded square positions:', squares.value);
 };
 </script>
 
