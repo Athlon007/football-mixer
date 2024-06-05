@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <div class="full-width row justify-center q-pt-md">
-      <football-field />
+      <FootballField :best-microphone-index="audio.prediction.value?.best_source ?? -1"/>
     </div>
 
     <div class="text-center">

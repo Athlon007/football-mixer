@@ -9,7 +9,7 @@
           :width="size"
           :height="size"
           :fill="square.active ? '#7BBF26' : '#1A191D'"
-          stroke="white"
+          :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
           stroke-width="3"
           rx="5"
           @mousedown="onMouseDown($event, square)"
@@ -47,9 +47,6 @@ const squares = ref([]);
 const draggingSquare = ref(null);
 const gridSnap = 10;
 const fieldImage = ref('src/assets/football-field.png');
-
-const micValues = ref<number[]>([]);
-const currentMicValues = ref<number[]>([]);
 
 const fieldContainer = ref<HTMLElement | null>(null);
 
