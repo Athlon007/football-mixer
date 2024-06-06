@@ -17,7 +17,7 @@
           />
           <text
             :x="square.x"
-            :y="square.y"
+            :y="square.y + 2"
             :height="size"
             fill="black"
             text-anchor="middle"
@@ -38,33 +38,33 @@
 import { useSettingsStore } from 'src/stores/settings-store';
 import { ref, onMounted, watch } from 'vue';
 
-const settingsStore = useSettingsStore();
+const settingsStore = useSettingsStore(); // Settings store
 
-const width = 800;
-const height = 400;
+const width = 800; // Width of the field
+const height = 400; // Height of the field
 const size = 35;  // Size of the squares
 
-const squares = ref([]);
+const squares = ref([]); // Array of squares
 
-const draggingSquare = ref(null);
-const gridSnap = 10;
-const fieldImage = ref('src/assets/football-field.png');
+const draggingSquare = ref(null); // Square being dragged
+const gridSnap = 10; // Snap to grid
+const fieldImage = ref('src/assets/football-field.png'); // Field image
 
-const fieldContainer = ref<HTMLElement | null>(null);
+const fieldContainer = ref<HTMLElement | null>(null); // Field container
 
+// Define props
 const props = defineProps<{
   bestMicrophoneIndex: number;
 }>();
 
+// Load square positions when component is mounted
 onMounted(() => {
   loadSquarePositions();
 });
 
+// Load square positions from local storage
 const loadSquarePositions = () => {
   const savedPositions = localStorage.getItem('square_positions');
-  // print the saved positions to the console
-  console.log("Saved positions")
-  console.log(savedPositions);
   if (savedPositions) {
     const positions = JSON.parse(savedPositions);
     squares.value = positions.map((pos, index) => ({
@@ -77,6 +77,7 @@ const loadSquarePositions = () => {
   }
 };
 
+// Update squares based on used devices
 const updateSquares = () => {
   squares.value = settingsStore.devices.map((device, index) => {
     const square = squares.value[index] || {
@@ -94,15 +95,15 @@ const updateSquares = () => {
   saveSquarePositions();
 };
 
+// Save square positions to local storage
 const saveSquarePositions = () => {
-  // print the square positions to the console
-  console.log("SAVING positions")
-  console.log(squares.value);
   localStorage.setItem('square_positions', JSON.stringify(squares.value));
 };
 
+// Update squares when used devices change
 watch(() => settingsStore.usedDevices, updateSquares, {deep : true});
 
+// Update squares when best microphone index changes
 watch(() => props.bestMicrophoneIndex, (newIndex) => {
   // Set square to active if it's the best microphone
   squares.value.forEach((square, index) => {
@@ -110,14 +111,16 @@ watch(() => props.bestMicrophoneIndex, (newIndex) => {
   });
 });
 
-const onMouseDown = (event, square) => {
+// Start dragging square
+const onMouseDown = (event: MouseEvent, square: any) => {
   event.stopPropagation();
   draggingSquare.value = square;
   window.addEventListener('mousemove', onMouseMove);
   window.addEventListener('mouseup', onMouseUp);
 };
 
-const onMouseMove = (event) => {
+// Move square when dragging within the field
+const onMouseMove = (event: MouseEvent) => {
   if (draggingSquare.value && fieldContainer.value) {
     const fieldRect = fieldContainer.value.getBoundingClientRect();
     draggingSquare.value.x = event.clientX - fieldRect.left;
@@ -131,10 +134,12 @@ const onMouseMove = (event) => {
     draggingSquare.value.x = Math.round(draggingSquare.value.x / gridSnap) * gridSnap;
     draggingSquare.value.y = Math.round(draggingSquare.value.y / gridSnap) * gridSnap;
 
+    // Save position
     saveSquarePositions();
   }
 };
 
+// Stop dragging when mouse is released
 const onMouseUp = () => {
   draggingSquare.value = null;
   window.removeEventListener('mousemove', onMouseMove);
