@@ -1,32 +1,34 @@
 <template>
   <div ref="fieldContainer" class="container">
-    <img :src="fieldImage" alt="Football field" class="no-drag" :width="width" :height="height" />
+    <img :src="fieldImage" alt="Football field" class="no-drag" :width="width" :height="height" draggable="false"/>
     <svg :width="width" :height="height" class="overlay">
-      <g v-for="(square, index) in squares" :key="square.id">
-        <rect
-          :x="square.x - size / 2"
-          :y="square.y - size / 2"
-          :width="size"
-          :height="size"
-          :fill="square.active ? '#7BBF26' : '#1A191D'"
-          :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
-          stroke-width="3"
-          rx="5"
-          @mousedown="onMouseDown($event, square)"
-        />
-        <text
-          :x="square.x"
-          :y="square.y"
-          :height="size"
-          fill="black"
-          text-anchor="middle"
-          dominant-baseline="middle"
-          font-size="28"
-          stroke="#474747"
-          stroke-width="1px"
-        >
+      <g v-for="(square, index) in squares" :key="index">
+        <g v-if="square.enabled">
+          <rect
+            :x="square.x - size / 2"
+            :y="square.y - size / 2"
+            :width="size"
+            :height="size"
+            :fill="square.active ? '#7BBF26' : '#1A191D'"
+            :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
+            stroke-width="3"
+            rx="5"
+            @mousedown="onMouseDown($event, square)"
+          />
+          <text
+            :x="square.x"
+            :y="square.y"
+            :height="size"
+            fill="black"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            font-size="28"
+            stroke="#474747"
+            stroke-width="1px"
+          >
           {{ square.id }}
         </text>
+        </g>
       </g>
     </svg>
   </div>
@@ -55,36 +57,34 @@ const props = defineProps<{
 }>();
 
 onMounted(() => {
-  initMics();
+  loadSquarePositions();
 });
 
-watch(() => settingsStore.usedDevices, () => {
-  initMics();
-});
-
-const initMics = () => {
-  // Load saved positions or initialize
-  if (localStorage.getItem('square_positions')) {
-    loadSquarePositions();
-  } else {
-    squares.value = Array.from({ length: settingsStore.usedDevices.length }, (_, index) => ({
-      id: index + 1, 
-      x: 100 + index * 100,
-      y: 100,
-      active: false,
-      enabled: settingsStore.usedDevices[index].enabled,
+const loadSquarePositions = () => {
+  const savedPositions = localStorage.getItem('square_positions');
+  // print the saved positions to the console
+  console.log("Saved positions")
+  console.log(savedPositions);
+  if (savedPositions) {
+    const positions = JSON.parse(savedPositions);
+    squares.value = positions.map((pos, index) => ({
+      id: pos.id || index + 1,
+      x: pos.x || 100 + index * 100,
+      y: pos.y || 100,
+      active: pos.active || false,
+      enabled: pos.enabled !== undefined ? pos.enabled : settingsStore.usedDevices[index].enabled || false,
     }));
   }
 };
 
-watch(() => settingsStore.usedDevices, () => {
+const updateSquares = () => {
   squares.value = settingsStore.devices.map((device, index) => {
     const square = squares.value[index] || {
       id: index + 1, 
       x: 100 + index * 100,
       y: 100,
       active: false,
-      enabled: device.enabled,
+      enabled : device.enabled,
     };
     return {
       ...square,
@@ -92,7 +92,16 @@ watch(() => settingsStore.usedDevices, () => {
     };
   });
   saveSquarePositions();
-}, { deep: true });
+};
+
+const saveSquarePositions = () => {
+  // print the square positions to the console
+  console.log("SAVING positions")
+  console.log(squares.value);
+  localStorage.setItem('square_positions', JSON.stringify(squares.value));
+};
+
+watch(() => settingsStore.usedDevices, updateSquares, {deep : true});
 
 watch(() => props.bestMicrophoneIndex, (newIndex) => {
   // Set square to active if it's the best microphone
@@ -131,26 +140,6 @@ const onMouseUp = () => {
   window.removeEventListener('mousemove', onMouseMove);
   window.removeEventListener('mouseup', onMouseUp);
   saveSquarePositions();
-};
-
-const saveSquarePositions = () => {
-  localStorage.setItem('square_positions', JSON.stringify(squares.value));
-};
-
-const loadSquarePositions = () => {
-  const savedPositions = localStorage.getItem('square_positions');
-  if (savedPositions) {
-    const positions = JSON.parse(savedPositions);
-    squares.value = positions.map((pos, index) => ({
-      id: pos.id || index + 1,
-      x: pos.x || 100 + index * 100,
-      y: pos.y || 100,
-      active: pos.active || false,
-      enabled: pos.enabled !== undefined ? pos.enabled : settingsStore.devices[index].enabled,
-    }));
-  }
-  // console if enabled
-  console.log('Loaded square positions:', squares.value);
 };
 </script>
 
