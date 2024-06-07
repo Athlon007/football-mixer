@@ -1,7 +1,7 @@
 <template>
   <div class="row">
     <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="col text-center full-height">
-      <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse />
+      <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse/>
       <div class="q-pt-md">
         <q-badge outline class="text-h5 bg-primary">
           {{ micValues[index]?.toFixed(0) }}
@@ -82,7 +82,6 @@ const resetSliders = () => {
 defineExpose({
   resetSliders,
 });
-
 </script>
 
 <style lang="scss" scoped>
@@ -90,5 +89,54 @@ defineExpose({
   // rotate the text
   transform: rotate(-90deg) translateX(-50%);
   text-align: right;
+}
+
+:deep(.q-slider__thumb) {
+  width: 10px; // Adjust width as needed
+  height: 50px; // Adjust height as needed
+  border-radius: 3px; // Rounded corners
+  background-color: #00ffff; // Thumb color
+}
+
+:deep(.q-slider__thumb::before) {
+  content: '';
+  width: 30px; // Adjust inner circle width as needed
+  height: 65px; // Adjust inner circle height as needed
+  border-radius: 3px; // Make it a circle
+  background: linear-gradient(#423D4A, #24262C, #423D4A); // Inner circle color
+  stroke: #24262C;
+  stroke-width: 2px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+:deep(.q-slider__track),
+:deep(.q-slider__track--active) {
+  width: 6px !important;
+  background-color: #1A191D;
+  stroke: #131315;
+  stroke-width: 4px;
+}
+
+:deep(.q-slider__thumb-shape) {
+  background-color: white !important;
+  border-radius: 0px;
+  width: 100%; // Adjust width as needed
+  height: 3px; // Adjust height as needed
+  transform: none;
+}
+
+:deep(.q-slider__thumb-shape::before) {
+  background-color: white !important;
+  border-radius: 0px;
+  width: 100%; // Adjust width as needed
+  height: 3px; // Adjust height as needed
+  transform: none;
+}
+
+:deep(.q-slider__thumb-shape svg) {
+  visibility: hidden;
 }
 </style>
