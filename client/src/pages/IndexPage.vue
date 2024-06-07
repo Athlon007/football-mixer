@@ -5,12 +5,14 @@
     </div>
 
     <div class="text-center fill-height">
-      <div class="row justify-center q-pb-md q-gutter-x-md">
-        <q-btn color="primary" @click="audio.startRecording">
-          <q-icon size="18px" class="q-pr-sm" name="circle" :color="audio.isRecording.value ? 'red' : 'white'" />
-          Record
-        </q-btn>
-        <q-btn color="primary" label="Stop" @click="stopRecording" icon="stop" />
+      <div class="row justify-center q-pb-xl">
+        <div class="button-container">
+          <q-btn :color="audio.isRecording.value ? 'blue-1' : 'light-blue-8'" @click="audio.startRecording" class="simple-border">
+            <q-icon size="18px" class="q-pr-sm" name="circle" :color="audio.isRecording.value ? 'red' : 'white'" />
+            {{ audio.isRecording.value ? "Recording" : "Record" }}
+          </q-btn>
+          <q-btn :color="audio.isRecording.value ? 'light-blue-8' : 'blue-1'" label="Stop" @click="stopRecording" icon="stop" class="simple-border"/>
+        </div>
       </div>
 
       <SystemStatusComponent />
@@ -47,6 +49,13 @@ const stopRecording = () => {
 </script>
 
 <style scoped>
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 30px;
+}
+
 .fill-height {
   flex: 1; /* Allow the div to fill remaining height */
 }
@@ -55,5 +64,14 @@ const stopRecording = () => {
 {
   display: flex;
   flex-direction: column;
+}
+
+.q-btn {
+  width:140px;
+}
+
+.simple-border {
+  border: 2px solid #dbdbdb;
+  border-radius: 5px;
 }
 </style>
