@@ -1,11 +1,11 @@
 <template>
   <q-page>
-    <div class="full-width row justify-center q-pt-md">
+    <div class="full-width row justify-center q-pt-md q-pb-md">
       <FootballField :best-microphone-index="audio.prediction.value?.best_source ?? -1"/>
     </div>
 
-    <div class="text-center">
-      <div class="row justify-center q-pb-xl q-gutter-x-md">
+    <div class="text-center fill-height">
+      <div class="row justify-center q-pb-md q-gutter-x-md">
         <q-btn color="primary" @click="audio.startRecording">
           <q-icon size="18px" class="q-pr-sm" name="circle" :color="audio.isRecording.value ? 'red' : 'white'" />
           Record
@@ -15,7 +15,7 @@
 
       <SystemStatusComponent />
 
-      <div class="full-width">
+      <div class="full-width fill-height q-pt-md">
         <sliders ref="slidersRef" :best-microphone-index="audio.prediction.value?.best_source ?? -1" />
       </div>
 
@@ -45,3 +45,15 @@ const stopRecording = () => {
   audio.stopRecording();
 };
 </script>
+
+<style scoped>
+.fill-height {
+  flex: 1; /* Allow the div to fill remaining height */
+}
+
+.q-page
+{
+  display: flex;
+  flex-direction: column;
+}
+</style>

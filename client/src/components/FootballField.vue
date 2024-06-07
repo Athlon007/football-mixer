@@ -40,8 +40,8 @@ import { ref, onMounted, watch } from 'vue';
 
 const settingsStore = useSettingsStore(); // Settings store
 
-const width = 800; // Width of the field
-const height = 400; // Height of the field
+const width = 600; // Width of the field
+const height = 350; // Height of the field
 const size = 35;  // Size of the squares
 
 const squares = ref([]); // Array of squares
@@ -170,7 +170,7 @@ const onMouseUp = () => {
 
 <style lang="scss" scoped>
 .container {
-  height: 50vh;
+  height: 100%;
   position: relative;
 }
 

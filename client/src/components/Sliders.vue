@@ -1,15 +1,15 @@
 <template>
   <div class="row justify-center">
-    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="row q-my-sm q-mx-lg">
-      <div class="text-center col-auto">
-        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse/>
+    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="row no-wrap q-my-sm q-mx-lg">
+      <div class="col-8">
+        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse class="slider-height"/>
         <div class="q-pt-md">
           <q-badge outline class="text-h5 bg-primary">
             {{ micValues[index]?.toFixed(0) }}
           </q-badge>
         </div>
       </div>
-      <div class="label col">
+      <div class="label col-4">
           {{ settingsStore.micLabels[index] }}
       </div>
     </div>
@@ -90,6 +90,12 @@ defineExpose({
   writing-mode: sideways-lr;
   text-align: right;
   color: rgb(189, 189, 189);
+  width: 20px;
+}
+
+.slider-height {
+  height: 30vh;
+  max-height: 280px;
 }
 
 :deep(.q-slider__thumb) {
