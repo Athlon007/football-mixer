@@ -1,15 +1,16 @@
 <template>
-  <div class="row">
-    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="col text-center full-height">
-      <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse/>
-      <div class="q-pt-md">
-        <q-badge outline class="text-h5 bg-primary">
-          {{ micValues[index]?.toFixed(0) }}
-        </q-badge>
+  <div class="row justify-center">
+    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="row q-my-sm q-mx-lg">
+      <div class="text-center col-auto">
+        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse/>
+        <div class="q-pt-md">
+          <q-badge outline class="text-h5 bg-primary">
+            {{ micValues[index]?.toFixed(0) }}
+          </q-badge>
+        </div>
       </div>
-
-      <div class="label">
-        {{ settingsStore.micLabels[index] }}
+      <div class="label col">
+          {{ settingsStore.micLabels[index] }}
       </div>
     </div>
   </div>
@@ -86,57 +87,87 @@ defineExpose({
 
 <style lang="scss" scoped>
 .label {
-  // rotate the text
-  transform: rotate(-90deg) translateX(-50%);
+  writing-mode: sideways-lr;
   text-align: right;
+  color: rgb(189, 189, 189);
 }
 
 :deep(.q-slider__thumb) {
-  width: 10px; // Adjust width as needed
-  height: 50px; // Adjust height as needed
-  border-radius: 3px; // Rounded corners
-  background-color: #00ffff; // Thumb color
+  width: 30px !important;
+  height: 65px;
+  border-radius: 3px;
 }
 
 :deep(.q-slider__thumb::before) {
-  content: '';
-  width: 30px; // Adjust inner circle width as needed
-  height: 65px; // Adjust inner circle height as needed
-  border-radius: 3px; // Make it a circle
-  background: linear-gradient(#423D4A, #24262C, #423D4A); // Inner circle color
-  stroke: #24262C;
-  stroke-width: 2px;
+  content: '1';
+  width: 30px;
+  height: 65px;
+  border-radius: 4px;
+  background: linear-gradient(#423D4A, #24262C, #423D4A);
+  color: rgb(219, 219, 219);
+  border: 2px solid #f5f5f5;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+:deep(.q-slider__thumb svg) {
+  background-color: #ffffff00 !important;
+  color: white;
+  border-radius: 0px;
+  width: 100%;
+  height: 3px;
+  transform: none;
+  border-radius: 2px solid red;
 }
 
 :deep(.q-slider__track),
 :deep(.q-slider__track--active) {
-  width: 6px !important;
+  width: 7px !important;
   background-color: #1A191D;
   stroke: #131315;
   stroke-width: 4px;
 }
 
-:deep(.q-slider__thumb-shape) {
-  background-color: white !important;
-  border-radius: 0px;
-  width: 100%; // Adjust width as needed
-  height: 3px; // Adjust height as needed
-  transform: none;
-}
-
-:deep(.q-slider__thumb-shape::before) {
-  background-color: white !important;
-  border-radius: 0px;
-  width: 100%; // Adjust width as needed
-  height: 3px; // Adjust height as needed
-  transform: none;
-}
-
-:deep(.q-slider__thumb-shape svg) {
+:deep(.q-slider__thumb-shape path) {
   visibility: hidden;
+}
+
+:deep(.q-slider__thumb-shape.absolute-full) {
+  top: 7px;
+  width: 30px;
+  height: 3px;
+  background-color: #fff !important;
+  color: white;
+  filter: invert(100);
+}
+
+:deep(.q-slider__thumb-shape.absolute-full::before) {
+  top: 7px;
+  width: 30px;
+  height: 3px;
+  background-color: #fff !important;
+  color: white;
+  filter: invert(100);
+}
+
+:deep(.q-slider__focus-ring)
+{
+  display: none;
+}
+
+:deep(.q-slider--active.q-slider--label .q-slider__thumb-shape) {
+  transform: scale(1) !important;
+}
+
+:deep(.q-badge) {
+  width: 40px;
+  height: 30px;
+  font-size: 1.1rem;
+  background-color: #182126 !important;
+  border: 2px solid #ABABAB;
+  margin-top: 15px;
 }
 </style>
