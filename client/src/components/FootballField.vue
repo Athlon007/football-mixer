@@ -71,7 +71,7 @@ const loadSquarePositions = () => {
       id: pos.id || index + 1,
       x: pos.x || 100 + index * 100,
       y: pos.y || 100,
-      active: pos.active || false,
+      active: false,
       enabled: pos.enabled !== undefined ? pos.enabled : settingsStore.usedDevices[index]?.enabled || false,
       labelIndex: pos.labelIndex || null,
     }));
