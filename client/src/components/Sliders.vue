@@ -1,15 +1,16 @@
 <template>
   <div class="row justify-center">
-    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="row no-wrap q-my-sm q-mx-lg">
+    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" :class="['row no-wrap q-my-sm', dynamicMarginClass]">
+      {{ index + 1 + "."}}
       <div class="col-8">
-        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse class="slider-height" :data-content="index+1"/>
-        <div class="q-pt-md">
+        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse class="slider-height"/>
+        <div class="q-pt-md badge-parent">
           <q-badge outline class="text-h5 bg-primary">
             {{ micValues[index]?.toFixed(0) }}
           </q-badge>
         </div>
       </div>
-      <div class="label col-4">
+      <div class="label col-4">          
           {{ settingsStore.micLabels[index] }}
       </div>
     </div>
@@ -18,7 +19,7 @@
 
 <script setup lang="ts">
 import { useSettingsStore } from 'src/stores/settings-store';
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, computed } from 'vue';
 
 const settingsStore = useSettingsStore();
 
@@ -31,6 +32,15 @@ const currentMicValues = ref<number[]>([]);
 const transitionDuration = 2000; // Duration of transition in milliseconds
 const fps = 60; // Frames per second
 const totalFrames = (transitionDuration / 1000) * fps;
+
+// Dynamic margin based on the number of devices
+const dynamicMarginClass = computed(() => {
+  const length = settingsStore.usedDevices.length;
+  if (length > 8) return 'q-mx-sm';
+  if (length > 6) return 'q-mx-md';
+  if (length > 4) return 'q-mx-lg';
+  return 'q-mx-xl';
+});
 
 onMounted(() => {
   initMics();
@@ -105,7 +115,7 @@ defineExpose({
 }
 
 :deep(.q-slider__thumb::before) {
-  content: attr(data-content);
+  content: '';
   width: 30px;
   height: 65px;
   border-radius: 4px;
@@ -168,6 +178,11 @@ defineExpose({
   transform: scale(1) !important;
 }
 
+.badge-parent
+{
+  display: flex;
+  justify-content: center;
+}
 :deep(.q-badge) {
   width: 40px;
   height: 30px;
@@ -175,5 +190,7 @@ defineExpose({
   background-color: #182126 !important;
   border: 2px solid #ABABAB;
   margin-top: 15px;
+  display: flex;
+  justify-content: center;
 }
 </style>
