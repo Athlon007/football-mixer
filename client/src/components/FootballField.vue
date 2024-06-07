@@ -26,7 +26,7 @@
             stroke="#474747"
             stroke-width="1px"
           >
-          {{ square.id }}
+          {{ square.labelIndex }}
         </text>
         </g>
       </g>
@@ -72,28 +72,51 @@ const loadSquarePositions = () => {
       x: pos.x || 100 + index * 100,
       y: pos.y || 100,
       active: pos.active || false,
-      enabled: pos.enabled !== undefined ? pos.enabled : settingsStore.usedDevices[index].enabled || false,
+      enabled: pos.enabled !== undefined ? pos.enabled : settingsStore.usedDevices[index]?.enabled || false,
+      labelIndex: pos.labelIndex || null,
+    }));
+  } else {
+    // Initialize squares if no positions are saved
+    squares.value = settingsStore.usedDevices.map((device, index) => ({
+      id: index + 1,
+      x: 100 + index * 100,
+      y: 100,
+      active: false,
+      enabled: device.enabled,
+      labelIndex: null,
     }));
   }
 };
 
 // Update squares based on used devices
 const updateSquares = () => {
+  let labelIndex = 1;
   squares.value = settingsStore.devices.map((device, index) => {
-    const square = squares.value[index] || {
-      id: index + 1, 
+    const existingSquare = squares.value.find(sq => sq.id === index + 1) || {
+      id: index + 1,
       x: 100 + index * 100,
       y: 100,
       active: false,
-      enabled : device.enabled,
+      enabled: device.enabled,
+      labelIndex: null,
     };
-    return {
-      ...square,
+
+    const newSquare = {
+      ...existingSquare,
       enabled: device.enabled,
     };
+
+    if (device.enabled) {
+      newSquare.labelIndex = labelIndex++;
+    } else {
+      newSquare.labelIndex = null;
+    }
+
+    return newSquare;
   });
   saveSquarePositions();
 };
+
 
 // Save square positions to local storage
 const saveSquarePositions = () => {
@@ -133,9 +156,6 @@ const onMouseMove = (event: MouseEvent) => {
     // Snap to grid
     draggingSquare.value.x = Math.round(draggingSquare.value.x / gridSnap) * gridSnap;
     draggingSquare.value.y = Math.round(draggingSquare.value.y / gridSnap) * gridSnap;
-
-    // Save position
-    saveSquarePositions();
   }
 };
 
