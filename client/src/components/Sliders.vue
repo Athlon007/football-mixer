@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="label col-4">          
-          {{ settingsStore.micLabels[index] }}
+        {{ truncatedLabel(index) }}
       </div>
     </div>
   </div>
@@ -41,6 +41,13 @@ const dynamicMarginClass = computed(() => {
   if (length > 4) return 'q-mx-lg';
   return 'q-mx-xl';
 });
+
+// Cut off audio label if it is too long
+const truncatedLabel = (index: number) => {
+  const label = settingsStore.micLabels[index];
+  const maxLength = 35;
+  return label.length > maxLength ? label.substring(0, maxLength) + '...' : label;
+};
 
 onMounted(() => {
   initMics();
