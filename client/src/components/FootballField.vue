@@ -19,10 +19,11 @@
             :x="square.x"
             :y="square.y + 2"
             :height="size"
-            fill="black"
+            fill="white"
             text-anchor="middle"
             dominant-baseline="middle"
             font-size="28"
+            font-weight="bold"
             stroke="#474747"
             stroke-width="1px"
           >
