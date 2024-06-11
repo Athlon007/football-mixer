@@ -1,25 +1,27 @@
 <template>
-  <div class="row  flex-center">
-    <div v-for="(n, index) in props.microphones" :key="index" class="col text-center">
+  <div class="row">
+    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" class="col text-center full-height">
       <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse />
       <div class="q-pt-md">
         <q-badge outline class="text-h5 bg-primary">
-          {{ micValues[index].toFixed(0) }}
+          {{ micValues[index]?.toFixed(0) }}
         </q-badge>
       </div>
 
       <div class="label">
-        {{ labels[index] }}
+        {{ settingsStore.micLabels[index] }}
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref, watch } from 'vue';
+import { useSettingsStore } from 'src/stores/settings-store';
+import { onMounted, ref, watch } from 'vue';
+
+const settingsStore = useSettingsStore();
 
 const props = defineProps<{
-  microphones: MediaDeviceInfo[];
   bestMicrophoneIndex: number;
 }>();
 
@@ -33,19 +35,14 @@ onMounted(() => {
   initMics();
 });
 
-const labels = computed(() => {
-  const labels = props.microphones.map((n) => n.label.replace('Microphone (', '').replace(')', ''));
-  return labels;
-});
-
-watch(() => props.microphones, () => {
+watch(() => settingsStore.usedDevices, () => {
   // For now, set all others to 0 and the best one to 50
   initMics();
 });
 
 const initMics = () => {
-  micValues.value = Array(props.microphones.length).fill(0);
-  currentMicValues.value = Array(props.microphones.length).fill(0);
+  micValues.value = Array(settingsStore.usedDevices.length).fill(0);
+  currentMicValues.value = Array(settingsStore.usedDevices.length).fill(0);
 };
 
 watch(() => props.bestMicrophoneIndex, (newIndex) => {

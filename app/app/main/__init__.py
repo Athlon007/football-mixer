@@ -10,9 +10,11 @@ from flask.app import Flask
 
 from flask_cors import CORS
 
-print('Loading Model...')
-ml_model = load_model('mirphil_v1.h5')
-print('Model Loaded')
+from app.main.service.model_service import load_ml_model
+
+#print('Loading Model...')
+#ml_model = load_model('models/mirphil_1000_1.0.h5')
+#print('Model Loaded')
 
 socketio = SocketIO()
 

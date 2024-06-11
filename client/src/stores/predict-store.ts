@@ -1,10 +1,18 @@
 import { defineStore } from 'pinia';
 import { api } from 'src/boot/axios';
 import { FilesBatch, StartResponse } from 'src/modules/models';
+
+/**
+ * Store for managing the predict API.
+ */
 export const usePredictStore = defineStore('predict', () => {
   const method = 'predict';
 
+  /**
+   * Predict the files in the batch.
+   */
   const predict = async (batch: FilesBatch): Promise<StartResponse> => {
+    // Files cannot be sent over JSON, so we use FormData.
     const formData = new FormData();
     for (let i = 0; i < batch.files.length; i++) {
       formData.append('file', batch.files[i]);

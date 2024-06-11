@@ -19,3 +19,19 @@ export interface FilesBatch {
   files: File[];
   batchId: string;
 }
+
+export interface SystemStatusResponse {
+  status: string;
+}
+
+export interface ModelResponse {
+  name: string;
+  version: string;
+  recommended_sampling_rate_ms: number;
+  recommended: boolean | undefined;
+}
+
+export interface ModelsListResponse {
+  current_model: string;
+  models: ModelResponse[];
+}
