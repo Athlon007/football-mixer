@@ -130,7 +130,7 @@ defineExpose({
   border-radius: 4px;
   background: linear-gradient(#423D4A, #24262C, #423D4A);
   color: rgb(219, 219, 219);
-  border: 2px solid #f5f5f5;
+  border: 2px solid #24262C;
   position: absolute;
   top: 50%;
   left: 50%;
@@ -165,8 +165,6 @@ defineExpose({
   width: 30px;
   height: 3px;
   background-color: #fff !important;
-  color: white;
-  filter: invert(100);
 }
 
 :deep(.q-slider__thumb-shape.absolute-full::before) {
@@ -174,8 +172,6 @@ defineExpose({
   width: 30px;
   height: 3px;
   background-color: #fff !important;
-  color: white;
-  filter: invert(100);
 }
 
 :deep(.q-slider__focus-ring) {

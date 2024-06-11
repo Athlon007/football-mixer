@@ -1,14 +1,14 @@
 <template>
   <div ref="fieldContainer" class="container">
-    <img :src="fieldImage" alt="Football field" class="no-drag" :width="width" :height="height" draggable="false" />
+    <img :src="footballField" alt="Football field" class="no-drag" :width="width" :height="height" draggable="false" />
     <svg :width="width" :height="height" class="overlay">
       <g v-for="(square, index) in squares" :key="index">
         <g v-if="square.enabled">
           <rect :x="square.x - size / 2" :y="square.y - size / 2" :width="size" :height="size"
             :fill="square.active ? '#7BBF26' : '#1A191D'" :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
             stroke-width="3" rx="5" @mousedown="onMouseDown($event, square)" />
-          <text :x="square.x" :y="square.y + 2" :height="size" fill="black" text-anchor="middle"
-            dominant-baseline="middle" font-size="28" stroke="#474747" stroke-width="1px">
+          <text :x="square.x" :y="square.y + 2" :height="size" fill="white" text-anchor="middle"
+            dominant-baseline="middle" font-size="28" font-weight="bold" stroke="#474747" stroke-width="1px">
             {{ square.labelIndex }}
           </text>
         </g>
@@ -21,6 +21,7 @@
 import { MicrophoneSquare } from 'src/modules/models';
 import { useSettingsStore } from 'src/stores/settings-store';
 import { ref, onMounted, watch } from 'vue';
+import footballField from 'src/assets/football-field.png'
 
 const settingsStore = useSettingsStore(); // Settings store
 
@@ -32,7 +33,6 @@ const squares = ref<MicrophoneSquare[]>([]); // Array of squares
 
 const draggingSquare = ref(null); // Square being dragged
 const gridSnap = 10; // Snap to grid
-const fieldImage = ref('src/assets/football-field.png'); // Field image
 
 const fieldContainer = ref<HTMLElement | null>(null); // Field container
 
