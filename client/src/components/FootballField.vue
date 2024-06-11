@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <img src="~/assets/football-field.png" alt="Football field" />
+    <img src="~/assets/football-field.png" alt="Football field" class="no-drag" />
   </div>
 </template>
 

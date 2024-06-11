@@ -4,20 +4,44 @@
       <football-field />
     </div>
 
-    <div class="full-width">
-      <sliders />
+    <div class="text-center">
+      <div class="row justify-center q-pb-xl q-gutter-x-md">
+        <q-btn color="primary" @click="audio.startRecording">
+          <q-icon size="18px" class="q-pr-sm" name="circle" :color="audio.isRecording.value ? 'red' : 'white'" />
+          Record
+        </q-btn>
+        <q-btn color="primary" label="Stop" @click="stopRecording" icon="stop" />
+      </div>
+
+      <div class="full-width">
+        <sliders ref="slidersRef" :microphones="audio.devices.value"
+          :best-microphone-index="audio.prediction.value?.best_source ?? -1" />
+      </div>
+
+      <div class="q-mt-xl">
+        <textarea class="full-width" rows="5" v-model="transcript" placeholder="Transcript" readonly />
+      </div>
     </div>
   </q-page>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
-import { Meta } from 'src/modules/models';
 import FootballField from 'src/components/FootballField.vue';
 import Sliders from 'src/components/Sliders.vue';
+import { useAudio } from 'src/composables/audio';
+import { computed, ref } from 'vue';
 
+const audio = useAudio();
+const slidersRef = ref<InstanceType<typeof Sliders> | null>(null);
 
-const meta = ref<Meta>({
-  totalCount: 1200
+const transcript = computed(() => {
+  return JSON.stringify(audio.prediction.value, null, 2);
 });
+
+const stopRecording = () => {
+  audio.stopRecording();
+  setTimeout(() => {
+    slidersRef.value?.resetSliders();
+  }, 1000);
+};
 </script>
