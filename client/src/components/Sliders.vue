@@ -1,16 +1,18 @@
 <template>
   <div class="row justify-center">
-    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" :class="['row no-wrap q-my-sm', dynamicMarginClass]">
-      {{ index + 1 + "."}}
+    <div v-for="(n, index) in settingsStore.usedDevices" :key="index"
+      :class="['row no-wrap q-my-sm', dynamicMarginClass]">
+      {{ index + 1 + "." }}
       <div class="col-8">
-        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse class="slider-height"/>
+        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse
+          class="slider-height" />
         <div class="q-pt-md badge-parent">
           <q-badge outline class="text-h5 bg-primary">
             {{ micValues[index]?.toFixed(0) }}
           </q-badge>
         </div>
       </div>
-      <div class="label col-4">          
+      <div class="label col-4">
         {{ truncatedLabel(index) }}
       </div>
     </div>
@@ -176,8 +178,7 @@ defineExpose({
   filter: invert(100);
 }
 
-:deep(.q-slider__focus-ring)
-{
+:deep(.q-slider__focus-ring) {
   display: none;
 }
 
@@ -185,11 +186,11 @@ defineExpose({
   transform: scale(1) !important;
 }
 
-.badge-parent
-{
+.badge-parent {
   display: flex;
   justify-content: center;
 }
+
 :deep(.q-badge) {
   width: 40px;
   height: 30px;

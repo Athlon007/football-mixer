@@ -1,33 +1,16 @@
 <template>
   <div ref="fieldContainer" class="container">
-    <img :src="fieldImage" alt="Football field" class="no-drag" :width="width" :height="height" draggable="false"/>
+    <img :src="fieldImage" alt="Football field" class="no-drag" :width="width" :height="height" draggable="false" />
     <svg :width="width" :height="height" class="overlay">
       <g v-for="(square, index) in squares" :key="index">
         <g v-if="square.enabled">
-          <rect
-            :x="square.x - size / 2"
-            :y="square.y - size / 2"
-            :width="size"
-            :height="size"
-            :fill="square.active ? '#7BBF26' : '#1A191D'"
-            :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
-            stroke-width="3"
-            rx="5"
-            @mousedown="onMouseDown($event, square)"
-          />
-          <text
-            :x="square.x"
-            :y="square.y + 2"
-            :height="size"
-            fill="black"
-            text-anchor="middle"
-            dominant-baseline="middle"
-            font-size="28"
-            stroke="#474747"
-            stroke-width="1px"
-          >
-          {{ square.labelIndex }}
-        </text>
+          <rect :x="square.x - size / 2" :y="square.y - size / 2" :width="size" :height="size"
+            :fill="square.active ? '#7BBF26' : '#1A191D'" :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
+            stroke-width="3" rx="5" @mousedown="onMouseDown($event, square)" />
+          <text :x="square.x" :y="square.y + 2" :height="size" fill="black" text-anchor="middle"
+            dominant-baseline="middle" font-size="28" stroke="#474747" stroke-width="1px">
+            {{ square.labelIndex }}
+          </text>
         </g>
       </g>
     </svg>
@@ -35,6 +18,7 @@
 </template>
 
 <script setup lang="ts">
+import { MicrophoneSquare } from 'src/modules/models';
 import { useSettingsStore } from 'src/stores/settings-store';
 import { ref, onMounted, watch } from 'vue';
 
@@ -44,7 +28,7 @@ const width = 600; // Width of the field
 const height = 350; // Height of the field
 const size = 35;  // Size of the squares
 
-const squares = ref([]); // Array of squares
+const squares = ref<MicrophoneSquare[]>([]); // Array of squares
 
 const draggingSquare = ref(null); // Square being dragged
 const gridSnap = 10; // Snap to grid
@@ -67,7 +51,7 @@ const loadSquarePositions = () => {
   const savedPositions = localStorage.getItem('square_positions');
   if (savedPositions) {
     const positions = JSON.parse(savedPositions);
-    squares.value = positions.map((pos, index) => ({
+    squares.value = positions.map((pos: MicrophoneSquare, index: number) => ({
       id: pos.id || index + 1,
       x: pos.x || 100 + index * 100,
       y: pos.y || 100,
@@ -124,7 +108,7 @@ const saveSquarePositions = () => {
 };
 
 // Update squares when used devices change
-watch(() => settingsStore.usedDevices, updateSquares, {deep : true});
+watch(() => settingsStore.usedDevices, updateSquares, { deep: true });
 
 // Update squares when best microphone index changes
 watch(() => props.bestMicrophoneIndex, (newIndex) => {
