@@ -35,23 +35,19 @@ import SettingsCollection from './SettingsCollection.vue';
 import { useModelStore } from 'src/stores/model-store';
 import { computed, onMounted, ref } from 'vue';
 import { useQuasar } from 'quasar';
+import { useSystemStore } from 'src/stores/system-store';
 
 const $q = useQuasar();
 const modelsStore = useModelStore();
 const loadingModels = ref(false);
 const previousModel = ref<string>();
+const systemStore = useSystemStore();
 
 /**
  * Fetch models on component mount.
  */
 onMounted(async () => {
-  try {
-    await modelsStore.getModels();
-    // Store previous model, in case something goes wrong.
-    previousModel.value = modelsStore.models?.current_model;
-  } catch (error) {
-    console.error(error);
-  }
+  await checkStatus();
 });
 
 /**
@@ -90,6 +86,39 @@ const setModel = async (model: string) => {
     loadingModels.value = false;
   }
 };
+
+const checkStatus = async () => {
+  try {
+    await systemStore.check();
+    await loadModels();
+  } catch (error) {
+    $q.notify({
+      message: 'Back-end is not responding.',
+      position: 'center',
+      icon: 'warning',
+      timeout: 0,
+      color: 'negative',
+      actions: [
+        {
+          label: 'Retry', color: 'white', handler: () => {
+            checkStatus()
+          }
+        },
+      ]
+    });
+  }
+};
+
+const loadModels = async () => {
+  try {
+    await modelsStore.getModels();
+    // Store previous model, in case something goes wrong.
+    previousModel.value = modelsStore.models?.current_model;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 </script>
 
 <style lang="scss" scoped></style>
