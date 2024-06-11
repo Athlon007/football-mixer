@@ -12,7 +12,7 @@
     </q-drawer>
 
     <q-page-container>
-      <q-btn class="q-ml-md q-mt-md" outline size="2em" dense icon="settings" aria-label="Menu"
+      <q-btn class="q-ml-md q-mt-md setting-button" outline size="1.5em" dense icon="settings" aria-label="Menu"
         @click="toggleLeftDrawer" />
       <router-view />
     </q-page-container>
