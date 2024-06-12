@@ -66,31 +66,33 @@ const initMics = () => {
 };
 
 watch(() => props.bestMicrophoneIndex, (newIndex) => {
-  micValues.value = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
-  return;
+  if (!settingsStore.useSmoothAudioFade) {
+    micValues.value = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
+    return;
+  } else {
+    // For now, set all others to 0 and the best one to 50
+    let frame = 0;
 
-  // For now, set all others to 0 and the best one to 50
-  let frame = 0;
+    const startValues = [...currentMicValues.value];
+    const endValues = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
 
-  const startValues = [...currentMicValues.value];
-  const endValues = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
+    const animate = () => {
+      if (frame < totalFrames) {
+        frame++;
+        currentMicValues.value = currentMicValues.value.map((startValue, index) => {
+          const endValue = endValues[index];
+          const progress = frame / totalFrames;
+          return startValue + (endValue - startValue) * progress;
+        });
 
-  const animate = () => {
-    if (frame < totalFrames) {
-      frame++;
-      currentMicValues.value = currentMicValues.value.map((startValue, index) => {
-        const endValue = endValues[index];
-        const progress = frame / totalFrames;
-        return startValue + (endValue - startValue) * progress;
-      });
+        micValues.value = [...currentMicValues.value];
 
-      micValues.value = [...currentMicValues.value];
+        requestAnimationFrame(animate);
+      }
+    };
 
-      requestAnimationFrame(animate);
-    }
-  };
-
-  animate();
+    animate();
+  }
 });
 
 // publish method for resetting the sliders

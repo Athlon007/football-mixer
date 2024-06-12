@@ -2,7 +2,7 @@
     {
         "name": "mirphil_1000_1.0",
         "version": "1.0",
-        "recommended_sampling_rate_ms": 360,
+        "recommended_sampling_rate_ms": 320,
         "recommended": true
     },
     {
