@@ -4,13 +4,31 @@
     <svg :width="width" :height="height" class="overlay">
       <g v-for="(square, index) in squares" :key="index">
         <g v-if="square.enabled">
-          <rect :x="square.x - size / 2" :y="square.y - size / 2" :width="size" :height="size"
-            :fill="square.active ? '#7BBF26' : '#1A191D'" :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
-            stroke-width="3" rx="5" @mousedown="onMouseDown($event, square)" />
-          <text :x="square.x" :y="square.y + 2" :height="size" fill="white" text-anchor="middle"
-            dominant-baseline="middle" font-size="28" font-weight="bold" stroke="#474747" stroke-width="1px">
-            {{ square.labelIndex }}
-          </text>
+          <rect
+            :x="square.x - size / 2"
+            :y="square.y - size / 2"
+            :width="size"
+            :height="size"
+            :fill="square.active ? '#7BBF26' : '#1A191D'"
+            :stroke="square.active ? '#7BBF26' : '#FFFFFF'"
+            stroke-width="3"
+            rx="5"
+            @mousedown="onMouseDown($event, square)"
+          />
+          <text
+            :x="square.x"
+            :y="square.y + 2"
+            :height="size"
+            fill="white"
+            text-anchor="middle"
+            dominant-baseline="middle"
+            font-size="28"
+            font-weight="bold"
+            stroke="#474747"
+            stroke-width="1px"
+          >
+          {{ square.labelIndex }}
+        </text>
         </g>
       </g>
     </svg>
