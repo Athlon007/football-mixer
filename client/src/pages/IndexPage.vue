@@ -7,11 +7,11 @@
     <div class="text-center fill-height">
       <div class="row justify-center q-pb-xl">
         <div class="button-container">
-          <q-btn :color="audio.isRecording.value ? 'blue-1' : 'light-blue-8'" @click="audio.startRecording" class="simple-border">
+          <q-btn :color="audio.isRecording.value ? 'grey-10' : 'light-blue-8'" @click="audio.startRecording" class="simple-border">
             <q-icon size="18px" class="q-pr-sm" name="circle" :color="audio.isRecording.value ? 'red' : 'white'" />
             {{ audio.isRecording.value ? "Recording" : "Record" }}
           </q-btn>
-          <q-btn :color="audio.isRecording.value ? 'light-blue-8' : 'blue-1'" label="Stop" @click="stopRecording" icon="stop" class="simple-border"/>
+          <q-btn :color="audio.isRecording.value ? 'light-blue-8' : 'grey-10'" label="Stop" @click="stopRecording" icon="stop" class="simple-border"/>
         </div>
       </div>
 
