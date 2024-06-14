@@ -4,7 +4,7 @@ import numpy as np
 from PIL import Image
 import werkzeug.datastructures
 from app.main.service.model_service import ml_model
-from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream, filter_audio_data
+from ..service.audio_service import transform_audio_to_spectrogram, process_audio_stream, resize_spectrogram_image
 import concurrent.futures
 
 api = Namespace('predict', description='Prediction related operations')
@@ -23,23 +23,6 @@ file_upload_parser.add_argument('batch_id',
                                 location='form',
                                 required=True,
                                 help='Batch ID for the audio files')
-
-
-
-def resize_spectrogram_image(image, target_size=(100, 100)):
-    # Convert to PIL Image
-    image_pil = Image.fromarray(image.astype('uint8'))
-
-    # Resize the image
-    image_resized = image_pil.resize(target_size)
-
-    # Convert to RGB mode
-    image_resized = image_resized.convert('RGB')
-
-    # Convert back to numpy array
-    image_resized_np = np.array(image_resized)
-
-    return image_resized_np
 
 @api.route('/start')
 class StartMix(Resource):
