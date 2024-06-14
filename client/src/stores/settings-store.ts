@@ -14,7 +14,10 @@ export const useSettingsStore = defineStore("settings", () => {
   const devices = ref<DeviceEntry[]>([]);
   const initialized = ref(false);
   /** Sample rate of the audio. */
-  const sampleRate = ref(1000);
+  const sampleRate = ref(320);
+
+  /// EXPERIMENTAL SETTINGS ///
+  const useSmoothAudioFade = ref(false);
 
   /**
    * Initializes the store by fetching the list of audio devices.
@@ -133,6 +136,7 @@ export const useSettingsStore = defineStore("settings", () => {
     moveDeviceDown,
     micLabels,
     sampleRate,
-    allMicsLabels
+    allMicsLabels,
+    useSmoothAudioFade
   };
 });

@@ -1,3 +1,4 @@
+import SettingsComponent from 'src/components/SettingsComponent.vue';
 export interface PredictionResponse {
   result: string;
   prediction: number[][];
@@ -34,4 +35,13 @@ export interface ModelResponse {
 export interface ModelsListResponse {
   current_model: string;
   models: ModelResponse[];
+}
+
+export interface MicrophoneSquare {
+  id: number;
+  enabled: boolean;
+  x: number;
+  y: number;
+  active: boolean;
+  labelIndex: number;
 }

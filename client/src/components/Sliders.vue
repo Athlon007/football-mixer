@@ -1,16 +1,18 @@
 <template>
   <div class="row justify-center">
-    <div v-for="(n, index) in settingsStore.usedDevices" :key="index" :class="['row no-wrap q-my-sm', dynamicMarginClass]">
-      {{ index + 1 + "."}}
+    <div v-for="(n, index) in settingsStore.usedDevices" :key="index"
+      :class="['row no-wrap q-my-sm', dynamicMarginClass]">
+      {{ index + 1 + "." }}
       <div class="col-8">
-        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse class="slider-height"/>
+        <q-slider v-model="micValues[index]" :min="0" :max="50" color="slider-green" vertical reverse
+          class="slider-height" />
         <div class="q-pt-md badge-parent">
           <q-badge outline class="text-h5 bg-primary">
             {{ micValues[index]?.toFixed(0) }}
           </q-badge>
         </div>
       </div>
-      <div class="label col-4">          
+      <div class="label col-4">
         {{ truncatedLabel(index) }}
       </div>
     </div>
@@ -64,31 +66,33 @@ const initMics = () => {
 };
 
 watch(() => props.bestMicrophoneIndex, (newIndex) => {
-  micValues.value = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
-  return;
+  if (!settingsStore.useSmoothAudioFade) {
+    micValues.value = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
+    return;
+  } else {
+    // For now, set all others to 0 and the best one to 50
+    let frame = 0;
 
-  // For now, set all others to 0 and the best one to 50
-  let frame = 0;
+    const startValues = [...currentMicValues.value];
+    const endValues = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
 
-  const startValues = [...currentMicValues.value];
-  const endValues = micValues.value.map((_, index) => (index === newIndex ? 50 : 0));
+    const animate = () => {
+      if (frame < totalFrames) {
+        frame++;
+        currentMicValues.value = currentMicValues.value.map((startValue, index) => {
+          const endValue = endValues[index];
+          const progress = frame / totalFrames;
+          return startValue + (endValue - startValue) * progress;
+        });
 
-  const animate = () => {
-    if (frame < totalFrames) {
-      frame++;
-      currentMicValues.value = currentMicValues.value.map((startValue, index) => {
-        const endValue = endValues[index];
-        const progress = frame / totalFrames;
-        return startValue + (endValue - startValue) * progress;
-      });
+        micValues.value = [...currentMicValues.value];
 
-      micValues.value = [...currentMicValues.value];
+        requestAnimationFrame(animate);
+      }
+    };
 
-      requestAnimationFrame(animate);
-    }
-  };
-
-  animate();
+    animate();
+  }
 });
 
 // publish method for resetting the sliders
@@ -172,8 +176,7 @@ defineExpose({
   background-color: #fff !important;
 }
 
-:deep(.q-slider__focus-ring)
-{
+:deep(.q-slider__focus-ring) {
   display: none;
 }
 
@@ -181,11 +184,11 @@ defineExpose({
   transform: scale(1) !important;
 }
 
-.badge-parent
-{
+.badge-parent {
   display: flex;
   justify-content: center;
 }
+
 :deep(.q-badge) {
   width: 40px;
   height: 30px;

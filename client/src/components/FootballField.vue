@@ -1,6 +1,6 @@
 <template>
   <div ref="fieldContainer" class="container">
-    <img :src="fieldImage" alt="Football field" class="no-drag" :width="width" :height="height" draggable="false"/>
+    <img :src="footballField" alt="Football field" class="no-drag" :width="width" :height="height" draggable="false" />
     <svg :width="width" :height="height" class="overlay">
       <g v-for="(square, index) in squares" :key="index">
         <g v-if="square.enabled">
@@ -36,8 +36,10 @@
 </template>
 
 <script setup lang="ts">
+import { MicrophoneSquare } from 'src/modules/models';
 import { useSettingsStore } from 'src/stores/settings-store';
 import { ref, onMounted, watch } from 'vue';
+import footballField from 'src/assets/football-field.png'
 
 const settingsStore = useSettingsStore(); // Settings store
 
@@ -45,11 +47,10 @@ const width = 600; // Width of the field
 const height = 350; // Height of the field
 const size = 35;  // Size of the squares
 
-const squares = ref([]); // Array of squares
+const squares = ref<MicrophoneSquare[]>([]); // Array of squares
 
 const draggingSquare = ref(null); // Square being dragged
 const gridSnap = 10; // Snap to grid
-const fieldImage = ref('src/assets/football-field.png'); // Field image
 
 const fieldContainer = ref<HTMLElement | null>(null); // Field container
 
@@ -68,7 +69,7 @@ const loadSquarePositions = () => {
   const savedPositions = localStorage.getItem('square_positions');
   if (savedPositions) {
     const positions = JSON.parse(savedPositions);
-    squares.value = positions.map((pos, index) => ({
+    squares.value = positions.map((pos: MicrophoneSquare, index: number) => ({
       id: pos.id || index + 1,
       x: pos.x || 100 + index * 100,
       y: pos.y || 100,
@@ -125,7 +126,7 @@ const saveSquarePositions = () => {
 };
 
 // Update squares when used devices change
-watch(() => settingsStore.usedDevices, updateSquares, {deep : true});
+watch(() => settingsStore.usedDevices, updateSquares, { deep: true });
 
 // Update squares when best microphone index changes
 watch(() => props.bestMicrophoneIndex, (newIndex) => {
